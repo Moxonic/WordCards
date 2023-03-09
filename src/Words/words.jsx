@@ -4,6 +4,9 @@ let firstWordlist = [
     },{
         e:'speak', n:'snakker' 
     }
+    , {
+        e:'stearinlys', n:'candle'
+    }
 ];
 
 export default firstWordlist;

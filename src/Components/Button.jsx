@@ -1,17 +1,16 @@
 import React from 'react'
-import { GrStatusGood } from 'react-icons/gr';
-import { VscError } from 'react-icons/vsc';
 
 
 function Button(props) {
   return (
-    <div>
-        <button>
-            <div className='w-lg h-lg {props.color}'>
-                {props.buttonLogo}
-            </div>
-        </button>
-    </div>
+    
+      <button className='{props.xtraStyle}
+      rounded-full m-2 w-11 h-11 self-center bg-slate-300 p-2 
+      hover:bg-slate-50 
+     '>
+        {props.content}
+      </button>
+    
   )
 }
 

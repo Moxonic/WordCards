@@ -1,6 +1,8 @@
 let firstWordlist = [
-    {
-        e:'when?', n:'når?'
+    {   
+        id: 1,
+        e:'when?', 
+        n:'når?'
     },{
         e:'speak', n:'snakker' 
     }

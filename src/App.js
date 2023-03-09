@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import Wordcard from './Components/Wordcard';
 import Header from './Components/Header'
 import Button from './Components/Button';
-
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 
 
 function App() {
+
   const getFromLocalStorage = () => {
-    if (localStorage.getItem('words') !== null) {
-      return localStorage.getItem('words');
+    if (localStorage.getItem('words') !== null && localStorage.getItem('words').length !== 0) {
+      const cards = JSON.parse(localStorage.getItem('words'));
+      return cards[0].cardFront.word;
     }
 
     return ''
@@ -23,7 +24,23 @@ function App() {
   }
 
   const saveToLocalStorage = () => {
-    localStorage.setItem('words', words);
+    const card = {
+      cardId: Date.now(), // unique id
+      cardFront: {
+        word: words,
+      },
+      cardBack: {
+      }
+    }
+
+    const currentCards = JSON.parse(localStorage.getItem('words'));
+    const cardString = JSON.stringify([...currentCards, card]);
+
+    localStorage.setItem('words', cardString);
+  }
+
+  const logOutLocalStorage = () => {
+    console.log(JSON.parse(localStorage.getItem('words')));
   }
 
 
@@ -35,10 +52,11 @@ function App() {
       <br />
       <button onClick={saveToLocalStorage}>Save Data</button>
       <br />
-      <button onClick={getFromLocalStorage}> Console Log for local storage</button>
+      <button onClick={logOutLocalStorage}> Console Log for local storage</button>
     </div>
   </div>  
   )
 }
 
 export default App;
+

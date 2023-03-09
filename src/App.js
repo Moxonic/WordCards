@@ -32,7 +32,7 @@ function App() {
       cardBack: {
       }
     }
-
+    
     const currentCards = JSON.parse(localStorage.getItem('words'));
     const cardString = JSON.stringify([...currentCards, card]);
 
@@ -42,7 +42,6 @@ function App() {
   const logOutLocalStorage = () => {
     console.log(JSON.parse(localStorage.getItem('words')));
   }
-
 
   return (
   <div className="mainContainer h-screen w-screen m-auto flex flex-col justify-center bg-slate-400">

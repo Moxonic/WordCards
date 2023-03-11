@@ -4,3 +4,22 @@
 
 @import "~react-image-gallery/styles/css/image-gallery.css";
 
+:root {
+    --front-side: #fabb0d;
+    --back-side: #52e239;
+  }
+  
+
+
+
+.frontSideColor{
+    background-color: var(--front-side);
+}
+.backSideColor{
+    background-color: var(--back-side);
+}
+
+input{margin: 5px;
+background-color: rgb(249, 249, 249);
+border-radius: 50px;
+text-align: center;}

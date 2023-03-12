@@ -51,7 +51,6 @@ function NewCard(props) {
     setInputB('');
     
     //Makes the new card creator invisible after saving to local storage
-    console.log('HERE')
     props.changeVisibility();
   }
 
@@ -59,7 +58,6 @@ function NewCard(props) {
     console.log(JSON.parse(localStorage.getItem('WORDCARDS_DB')));
   }
 
-  
 
   return (
     <div className="absolute z-10 w-screen">
@@ -75,8 +73,8 @@ function NewCard(props) {
                     <input onChange={handleInputB} value={inputB} type="text" placeholder='Backside...' />
                   </div>
           </div>
-          <div className='h-10 w-screen flex'>
-            {inputA && inputB &&       <button className='bg-slate-200 w-24 mx-auto my-3 rounded-xl h-fit' onClick={saveToLocalStorage}>Save</button>}
+          <div className='savebutton h-10 w-screen flex'>
+            {inputA && inputB && <button className='bg-slate-200 w-24 mx-auto my-3 rounded-xl h-fit' onClick={saveToLocalStorage}>Save</button>}
           </div>
         
         <button onClick={logOutLocalStorage}> Console Log for local storage</button>

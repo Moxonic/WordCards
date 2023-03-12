@@ -1,16 +1,10 @@
 import React from 'react';
-import NewCard from './Components/NewCard';
 import WordCard from './Components/Wordcard';
-/* import Wordcard from './Components/Wordcard';
-import Header from './Components/Header'
-import Button from './Components/Button';
-import { Swiper, SwiperSlide } from 'swiper/react'; */
-/* import 'swiper/css';  */
-
-
+import Header from './Components/Header';
 function App() {
   return (
-    <div className="App">
+    <div className="App relative ">
+      <Header className='absolute top-0'/>
       <WordCard />
     </div>
   );

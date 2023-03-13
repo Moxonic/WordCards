@@ -4,8 +4,8 @@ import Header from './Components/Header';
 function App() {
   return (
     <div className="App relative ">
-      <Header className='absolute top-0'/>
-      <WordCard />
+      <Header className=''/>
+      <WordCard className=''/>
     </div>
   );
 }

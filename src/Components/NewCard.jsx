@@ -1,9 +1,7 @@
-import React, { useState } from 'react'
-import ReactCardFlip from 'react-card-flip';
-import AiFillFileAdd from 'react-icons/ai';
+import React, { useState, useEffect } from 'react'
 
 function NewCard(props) {
-  
+  const [isSaved, setSaved] = useState(false);
   const[isFlipped, setFlipped] = useState(true);
         
   function flip(){        
@@ -51,7 +49,7 @@ function NewCard(props) {
     setInputB('');
     
     //Makes the new card creator invisible after saving to local storage
-    props.changeVisibility();
+    props.changeVisibility();  
   }
 
   const logOutLocalStorage = () => {

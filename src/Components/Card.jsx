@@ -8,6 +8,10 @@ function Card(props) {
         setFlipped(isFlipped? false : true)
     }
 
+    function resetFlip(){
+        setFlipped(false);
+    }
+
     return (
     <div className="wordCardButtonContainer bg-opacity-0 m-auto mt-10 ">    
         <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal" className='bg-black '>

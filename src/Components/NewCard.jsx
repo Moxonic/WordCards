@@ -58,26 +58,23 @@ function NewCard(props) {
 
 
   return (
-    <div className="absolute z-10 w-screen">
-      <div className="mx-auto cardContainer flex flex-col m-auto">
-
-          <div className='cardContainer frontSideColor w-52 h-16 m-1 mx-auto flex flex-col justify-center rounded'>
-                  <div className='h-fit self-center bg-opacity-5'>
-                    <input className='bg-opacity-5 ' onChange={handleInputA} value={inputA} type="text" placeholder='Frontside...' />
-                  </div>
-          </div>
-          <div className='cardContainer backSideColor w-52 h-16 m-1 mx-auto flex flex-col justify-center rounded'>
-                  <div className='h-fit self-center'>
-                    <input onChange={handleInputB} value={inputB} type="text" placeholder='Backside...' />
-                  </div>
-          </div>
-          <div className='savebutton h-10 w-screen flex'>
-            {inputA && inputB && <button className='bg-slate-200 w-24 mx-auto my-3 rounded-xl h-fit' onClick={saveToLocalStorage}>Save</button>}
-          </div>
-        
-        <button onClick={logOutLocalStorage}> Console Log for local storage</button>
-        <button onClick={() => localStorage.clear()}>Clear local storage</button>
-    </div>
+    <div className="flex flex-col z-10 h-full w-screen ">
+      <button className='align-top h-9' onClick={() => localStorage.clear()}>Clear local storage</button>    
+      <div className="mx-auto justify-end h-96 cardContainer flex flex-col">
+            <div className='cardContainer m-5 frontSideColor w-52 h-16 m-1 mx-auto flex flex-col justify-center rounded-full'>
+                    <div className='h-fit self-center bg-opacity-5'>
+                      <input className='h-10' onChange={handleInputA} value={inputA} type="text" placeholder='Frontside...' />
+                    </div>
+            </div>
+            <div className='cardContainer m-5 backSideColor w-52 h-16 m-1 mx-auto flex flex-col justify-center rounded-full'>
+                    <div className='h-fit self-center'>
+                      <input className='h-10' onChange={handleInputB} value={inputB} type="text" placeholder='Backside...' />
+                    </div>
+            </div>
+            <div className='savebutton h-24 w-screen flex '>
+              {inputA && inputB && <button className='bg-slate-200  h-12 w-52  mx-auto my-3 rounded-3xl h-fit' onClick={saveToLocalStorage}>Save</button>}
+            </div>  
+      </div>
   </div>
 
  

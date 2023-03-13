@@ -11,38 +11,45 @@ let localDB = JSON.parse(localStorage.getItem('WORDCARDS_DB')) || [];
 function Wordcard() {
     const[newCardVisibility, setNewCardVisibility] = useState(false);
 
-
     function makeCreatorVisible(){
         newCardVisibility ? setNewCardVisibility(false) : setNewCardVisibility(true); 
-        //reload the page to update the localDB
+        
+        //reload the page to update the cards with the localDB
         console.log('newCardVisibility',newCardVisibility)
         if(newCardVisibility==true) {
-            console.log('RRRreload')
             window.location.reload();
             };
     }
+
+    function handleSlideChange(){
+        console.log('slipping');
+        
+        }
     
     return (  
-        <div className="container absolute h-fit w-screen m-auto flex flex-col justify-center bg-slate-300">
+        <div className="container absolute h-full w-screen m-auto flex flex-col justify-center bg-slate-300">
             <button onClick={makeCreatorVisible} className='rounded-full z-20 m-2 w-11 h-11 self-end bg-slate-300 p-2 hover:bg-slate-50 '>
                 <AiFillFileAdd className='h-6 w-6 m-auto '></AiFillFileAdd>
             </button>
             {newCardVisibility ? <NewCard changeVisibility={makeCreatorVisible} /> : null}
-            {newCardVisibility ? <div className='h-screen'></div> :
+            {newCardVisibility ? <div className='h-full'></div> :
             <Swiper loop={true} spaceBetween={10}
                 slidesPerView={1}
-                onSlideChange={() => console.log('slide change')}
+                // I want to use the onSlideChange event to trigger flipreset in CARD
+                onSlideChange={() => {handleSlideChange()}}
                 onSwiper={(swiper) => console.log(swiper)} 
                 className='w-screen h-screen'>
 
+                {localDB.length === 0 ? <div className='z-30'>Create your first Card</div> : null}
                 {localDB.map((wordCard, index) => {
                     return <SwiperSlide className=''>
-                        <Card 
-                            key={index}
-                            frontSide={wordCard.cardFront.wordA}
-                            backSide={wordCard.cardBack.wordB }
-                        />
-                    </SwiperSlide>}
+                                <Card 
+                                    key={index}
+                                    frontSide={wordCard.cardFront.wordA}
+                                    backSide={wordCard.cardBack.wordB }
+                                    flipReset={handleSlideChange}
+                                />
+                            </SwiperSlide>}
                 )}
             </Swiper>}
             

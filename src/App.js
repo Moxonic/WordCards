@@ -3,7 +3,7 @@ import WordCard from './Components/Wordcard';
 import Header from './Components/Header';
 function App() {
   return (
-    <div className="App relative ">
+    <div className="h-screen w-screen relative">
       <Header className=''/>
       <WordCard className=''/>
     </div>

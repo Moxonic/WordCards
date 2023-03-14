@@ -4,7 +4,7 @@ import Header from './Components/Header';
 function App() {
   return (
     <div className="h-screen w-screen relative">
-      <Header className=''/>
+    {/*   <Header className=''/> */}
       <WordCard className=''/>
     </div>
   );

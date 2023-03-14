@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState} from 'react';
+import {IoWarningOutline} from 'react-icons/io5';
 
 function NewCard(props) {
   const [isSaved, setSaved] = useState(false);
@@ -58,21 +59,26 @@ function NewCard(props) {
 
 
   return (
-    <div className="flex flex-col z-10 h-full w-screen ">
-      <button className='align-top h-9' onClick={() => localStorage.clear()}>Clear local storage</button>    
+    <div className="createContainer flex flex-col z-10 h-full w-screen ">
+      <div className='h-12 w-screen flex justify-start'>
+        <IoWarningOutline className='h-5 w-5 m-1 self-center text-red-700'/> 
+        <button className='align-top  text-red-700 ' onClick={() => localStorage.clear()}>  
+          <p>Clear local storage</p>
+        </button>    
+      </div>
       <div className="mx-auto justify-end h-96 cardContainer flex flex-col">
-            <div className='cardContainer m-5 frontSideColor w-52 h-16 m-1 mx-auto flex flex-col justify-center rounded-full'>
+            <div className='cardContainer m-5 frontSideColor w-52 h-16 m-1 mx-auto flex flex-col justify-center rounded-xl'>
                     <div className='h-fit self-center bg-opacity-5'>
-                      <input className='h-10' onChange={handleInputA} value={inputA} type="text" placeholder='Frontside...' />
+                      <input className='h-10 rounded-xl' onChange={handleInputA} value={inputA} type="text" placeholder='Frontside...' />
                     </div>
             </div>
-            <div className='cardContainer m-5 backSideColor w-52 h-16 m-1 mx-auto flex flex-col justify-center rounded-full'>
+            <div className='cardContainer m-5 backSideColor w-52 h-16 m-1 mx-auto flex flex-col justify-center rounded-xl'>
                     <div className='h-fit self-center'>
-                      <input className='h-10' onChange={handleInputB} value={inputB} type="text" placeholder='Backside...' />
+                      <input className='h-10 rounded-xl' onChange={handleInputB} value={inputB} type="text" placeholder='Backside...' />
                     </div>
             </div>
             <div className='savebutton h-24 w-screen flex '>
-              {inputA && inputB && <button className='bg-slate-200  h-12 w-52  mx-auto my-3 rounded-3xl h-fit' onClick={saveToLocalStorage}>Save</button>}
+              {inputA && inputB && <button className='bg-slate-200  h-12 w-52  mx-auto my-3 rounded-xl h-fit' onClick={saveToLocalStorage}>Save</button>}
             </div>  
       </div>
   </div>

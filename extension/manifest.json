@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyJAzUmJDmWiOYYux2aeGSCVZBksWUcKrGty44oGwkoX7dmcFuzFgLJZC/xU5r2rrR0dQwEsmGmisoJG5+H/n9d1UvyiOQfn3+k6J4b6l+/sWb5BhWNSAIySbeKmMAJ7dp16s1GEeRH9LH2mHECXiE/w3kN8/l39Nnw0aHbxQxYm/J2quHVEHc+VMCV2TDxQpuil4uoRHTxZx1YA0Rav+OyYb76YAzhvGKH12QsUdO8qN92kw+gxvuydo1MjgnUSGJ0yur2k0LiI1MktlbL4GT9h6qBhdkDKPZhocEo0d5cA5sA4lHLso2tdI525f/cs0dASV9OygeeZvl/HFtSxguwIDAQAB",
+  "name": "WordCards – Translate History Sync",
+  "version": "0.1.0",
+  "description": "Sends words you translate on Google Translate to your WordCards account for spaced-repetition review.",
+  "permissions": ["identity", "storage", "alarms", "activeTab"],
+  "host_permissions": [
+    "https://translate.google.com/*",
+    "https://firestore.googleapis.com/*",
+    "https://identitytoolkit.googleapis.com/*",
+    "https://securetoken.googleapis.com/*"
+  ],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": { "default_popup": "popup.html", "default_title": "WordCards Sync" },
+  "content_scripts": [
+    {
+      "matches": ["https://translate.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "oauth2": {
+    "client_id": "438532077356-r45p3f15f35khscr6bkf8idcpvbkavv5.apps.googleusercontent.com",
+    "scopes": ["openid", "email", "profile"]
+  }
+}
+

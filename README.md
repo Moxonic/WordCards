@@ -1,4 +1,48 @@
-# Getting Started with Create React App
+# WordCards
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c6eb9abe-658d-4b0f-87ae-e4f94185274c/deploy-status)](https://app.netlify.com/projects/mywordcards/deploys)
+
+A vocabulary trainer: flip cards, swipe to grade yourself, and let spaced
+repetition decide when each word comes back.
+
+- **Google sign-in + cloud sync** (Firebase Auth + Firestore) — cards and review
+  progress follow your account across devices.
+- **Swipe review** — tap a card to flip, swipe **right** if you remember it
+  (longer interval), **left** to repeat it soon. Scheduling uses **Leitner
+  boxes** (`src/lib/leitner.js`, intervals 1 / 2 / 4 / 7 / 14 days).
+- **Manual entry** — the `+` button adds a card by hand.
+- **Companion Chrome extension** (`extension/`) — pushes words you translate on
+  `translate.google.com` into your account automatically (best-effort; Google's
+  markup is unstable).
+
+## First-time setup
+
+You must create a Firebase project and (for the extension) one OAuth client.
+**See [`SETUP.md`](./SETUP.md).** Then:
+
+```bash
+cp .env.example .env      # fill in your Firebase web config
+npm install
+npm start
+npm test                  # runs the Leitner unit tests
+```
+
+## Deploy (Netlify)
+
+Netlify builds on every push — build settings live in [`netlify.toml`](./netlify.toml)
+(`npm run build` → `build/`, with an SPA redirect). You don't build locally.
+
+Two one-time steps in the dashboards:
+
+1. **Netlify → Site settings → Environment variables** — add all six
+   `REACT_APP_FIREBASE_*` values (`.env` is gitignored, so the build has none).
+2. **Firebase → Authentication → Settings → Authorized domains** — add the
+   `*.netlify.app` domain (and any custom domain) or Google sign-in fails with
+   `auth/unauthorized-domain`.
+
+---
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

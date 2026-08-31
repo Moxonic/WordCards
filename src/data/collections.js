@@ -2,6 +2,7 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -11,6 +12,7 @@ import {
 import { db } from '../firebase';
 import { newCardState } from '../lib/leitner';
 import { makeDedupeKey, DEFAULT_COLLECTION_ID } from './cards';
+import { STARTER_DECKS } from './starterDecks';
 
 // Firestore: users/{uid}/collections/{collectionId}
 //   { name, source: 'default'|'manual'|'extension'|'imported', createdAt, shareCode? }
@@ -117,9 +119,25 @@ export async function shareCollection(uid, coll, cards) {
   return code;
 }
 
-/** Add a bundled starter deck as a new collection. Returns { count, collectionId }. */
+/**
+ * Add one bundled starter deck. The deck's `id` is used as the collection doc id
+ * so it is the same on every device and re-adding after a delete restores it.
+ * No-op (returns added: 0) if that collection already exists.
+ */
 export async function addStarterDeck(uid, deck) {
-  const collectionId = await createCollection(uid, deck.name);
+  const ref = doc(db, 'users', uid, 'collections', deck.id);
+  const existing = await getDoc(ref);
+  if (existing.exists()) return { count: 0, collectionId: deck.id, skipped: true };
+
+  // Also skip if a same-named collection exists from an older version that used
+  // a random id, so nobody ends up with two copies.
+  const all = await getDocs(collection(db, 'users', uid, 'collections'));
+  if (all.docs.some((d) => (d.data().name || '') === deck.name)) {
+    return { count: 0, collectionId: null, skipped: true };
+  }
+
+  await setDoc(ref, { name: deck.name, source: 'starter', createdAt: Date.now() });
+
   let count = 0;
   const rows = deck.cards || [];
   for (let i = 0; i < rows.length; i += 450) {
@@ -131,7 +149,7 @@ export async function addStarterDeck(uid, deck) {
         back: String(r.back).trim(),
         sourceLang: r.sourceLang ?? null,
         targetLang: r.targetLang ?? null,
-        collectionId,
+        collectionId: deck.id,
         source: 'starter',
         dedupeKey: makeDedupeKey(r.front, r.back),
         ...newCardState(),
@@ -140,7 +158,25 @@ export async function addStarterDeck(uid, deck) {
     }
     await batch.commit();
   }
-  return { count, collectionId };
+  return { count, collectionId: deck.id };
+}
+
+/**
+ * Give a new account the three built-in collections, once. Tracked by a flag so
+ * that decks the user later deletes stay deleted. Safe to call on every sign-in.
+ * @returns true if it seeded this time, false if already done.
+ */
+export async function seedStarterDecksOnce(uid) {
+  const flagRef = doc(db, 'users', uid, 'meta', 'seed');
+  const flag = await getDoc(flagRef);
+  if (flag.exists() && flag.data().starters) return false;
+
+  for (const deck of STARTER_DECKS) {
+    // eslint-disable-next-line no-await-in-loop
+    await addStarterDeck(uid, deck);
+  }
+  await setDoc(flagRef, { starters: true, at: Date.now() });
+  return true;
 }
 
 /** Copy a shared collection (by code) into this account as a new collection. */

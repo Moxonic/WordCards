@@ -7,7 +7,11 @@ import ReviewDeck from './ReviewDeck';
 import ManageView from './ManageView';
 import { useAuth } from '../context/AuthContext';
 import { subscribeToCards, importLegacyCards, assignOrphanCards } from '../data/cards';
-import { subscribeCollections, ensureDefaultCollection } from '../data/collections';
+import {
+  subscribeCollections,
+  ensureDefaultCollection,
+  seedStarterDecksOnce,
+} from '../data/collections';
 
 const MIGRATION_FLAG = 'wordcards_migrated_v1';
 
@@ -38,12 +42,22 @@ function Wordcard() {
   const [legacy, setLegacy] = useState(alreadyMigrated ? [] : readLegacyCards());
   const [migrating, setMigrating] = useState(false);
   const orphanFixDone = useRef(false);
+  const setupDone = useRef(false);
 
   useEffect(() => {
-    ensureDefaultCollection(uid).catch((e) =>
-      // eslint-disable-next-line no-console
-      console.error('[wordcards] ensureDefaultCollection failed:', e),
-    );
+    if (!setupDone.current) {
+      setupDone.current = true;
+      (async () => {
+        try {
+          await ensureDefaultCollection(uid);
+          // Everyone gets the three built-in collections on first sign-in.
+          await seedStarterDecksOnce(uid);
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error('[wordcards] initial collection setup failed:', e);
+        }
+      })();
+    }
     const unsubCards = subscribeToCards(uid, setCards);
     const unsubColls = subscribeCollections(uid, setCollections);
     return () => {

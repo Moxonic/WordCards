@@ -65,7 +65,10 @@ function ManageView({ uid, cards, collections }) {
   async function addStarter(deck) {
     await run(
       () => addStarterDeck(uid, deck),
-      (res) => `Added "${deck.name}" — ${res.count} cards.`,
+      (res) =>
+        res.skipped
+          ? `"${deck.name}" is already in your collections.`
+          : `Added "${deck.name}" — ${res.count} cards.`,
     );
   }
 
@@ -146,7 +149,7 @@ function ManageView({ uid, cards, collections }) {
           <div className="bg-white rounded-xl shadow-sm p-3 flex flex-col gap-2">
             <p className="text-sm font-medium text-slate-700">Starter packs</p>
             {STARTER_DECKS.map((deck) => {
-              const already = collections.some((c) => c.name === deck.name);
+              const already = collections.some((c) => c.id === deck.id);
               return (
                 <div key={deck.id} className="flex items-start gap-3">
                   <div className="flex-1">

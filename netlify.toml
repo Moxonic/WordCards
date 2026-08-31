@@ -1,0 +1,27 @@
+# Netlify build config. The site builds on every push to the connected branch;
+# you do NOT need to run `npm run build` yourself.
+#
+# Still required in the Netlify UI (Site settings → Environment variables),
+# because .env is gitignored — add all six:
+#   REACT_APP_FIREBASE_API_KEY, REACT_APP_FIREBASE_AUTH_DOMAIN,
+#   REACT_APP_FIREBASE_PROJECT_ID, REACT_APP_FIREBASE_STORAGE_BUCKET,
+#   REACT_APP_FIREBASE_MESSAGING_SENDER_ID, REACT_APP_FIREBASE_APP_ID
+#
+# And add the deployed domain to Firebase → Authentication → Settings →
+# Authorized domains, or Google sign-in fails with auth/unauthorized-domain.
+
+[build]
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # CRA treats lint warnings as build errors when CI is set. Keep the build
+  # from breaking on a stray warning; real errors still fail.
+  CI = "false"
+
+# Single-page app: serve index.html for any path so refreshes/deep links work.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

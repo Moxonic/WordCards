@@ -1,30 +1,74 @@
-WordCard
+# WordCards
 
-A simple flashcard app for learning vocabulary and other things you need to memorize.
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c6eb9abe-658d-4b0f-87ae-e4f94185274c/deploy-status)](https://app.netlify.com/projects/mywordcards/deploys)
 
-How it works
+A vocabulary trainer: flip cards, swipe to grade yourself, and let spaced
+repetition decide when each word comes back.
 
-Each card shows a term on one side. Flip it to reveal the answer, then swipe (or click) to sort it:
+- **Google sign-in + cloud sync** (Firebase Auth + Firestore) — cards and review
+  progress follow your account across devices.
+- **Swipe review** — tap a card to flip, swipe **right** if you knew it, **left**
+  to keep practising. A round isn't done until every card has been answered
+  right enough times; weak/lapsed cards need more, and no card repeats
+  back-to-back (`src/lib/session.js`). Between rounds, day-scale spacing uses
+  **Leitner boxes** (`src/lib/leitner.js`, 1 / 2 / 4 / 7 / 14 days).
+- **Collections** — group cards, review one at a time, and **share a collection**
+  with a friend via a code they import as their own copy.
+- **Starter packs** — 100-card decks: common Norwegian, sophisticated Norwegian,
+  technical theatre jargon (`src/data/starterDecks.js`).
+- **Manual entry** — the `+` button adds a card by hand.
+- **Companion Chrome extension** (`extension/`) — pushes words you translate on
+  `translate.google.com` into your account (best-effort; Google's markup is
+  unstable).
 
-Swipe left — you didn't know it. The card gets put back into the deck to show up again.
-Swipe right — you knew it. The card moves on and won't repeat as often.
+## First-time setup
 
-Cards you struggle with keep resurfacing until you've actually learned them, so practice time goes where it's needed instead of being spread evenly across everything.
+You must create a Firebase project and (for the extension) one OAuth client.
+**See [`SETUP.md`](./SETUP.md).** Then:
 
-Features
-Create your own decks (vocabulary, definitions, facts, anything with a front/back pair)
-Swipe-based review: left to repeat, right to advance
-Cards you get wrong come back into rotation automatically
-Track progress per deck
-Getting started
-bash
-git clone <repo-url>
-cd wordcard
+```bash
+cp .env.example .env      # fill in your Firebase web config
 npm install
-npm run dev
-Usage
-Create a new deck and add cards (term + answer).
-Start a review session.
-For each card, try to recall the answer before flipping it.
-Swipe left if you got it wrong, right if you got it right.
-Repeat until the deck is clear for that session.
+npm start
+npm test                  # runs the Leitner + session unit tests
+```
+
+## Deploy (Netlify)
+
+Netlify builds on every push — build settings live in [`netlify.toml`](./netlify.toml)
+(`npm run build` → `build/`, with an SPA redirect). You don't build locally.
+
+Two one-time steps in the dashboards:
+
+1. **Netlify → Site settings → Environment variables** — add all six
+   `REACT_APP_FIREBASE_*` values (`.env` is gitignored, so the build has none).
+2. **Firebase → Authentication → Settings → Authorized domains** — add the
+   `*.netlify.app` domain (and any custom domain) or Google sign-in fails with
+   `auth/unauthorized-domain`.
+
+---
+
+## Getting Started with Create React App
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+### Available Scripts
+
+In the project directory, you can run:
+
+#### `npm start`
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+#### `npm test`
+
+Launches the test runner in the interactive watch mode.
+
+#### `npm run build`
+
+Builds the app for production to the `build` folder.
+
+#### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**

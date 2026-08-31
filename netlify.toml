@@ -1,13 +1,13 @@
 # Netlify build config. The site builds on every push to the connected branch;
 # you do NOT need to run `npm run build` yourself.
 #
-# Still required in the Netlify UI (Site settings → Environment variables),
-# because .env is gitignored — add all six:
+# Still required in the Netlify UI (Site settings -> Environment variables),
+# because .env is gitignored -- add all six:
 #   REACT_APP_FIREBASE_API_KEY, REACT_APP_FIREBASE_AUTH_DOMAIN,
 #   REACT_APP_FIREBASE_PROJECT_ID, REACT_APP_FIREBASE_STORAGE_BUCKET,
 #   REACT_APP_FIREBASE_MESSAGING_SENDER_ID, REACT_APP_FIREBASE_APP_ID
 #
-# And add the deployed domain to Firebase → Authentication → Settings →
+# And add the deployed domain to Firebase -> Authentication -> Settings ->
 # Authorized domains, or Google sign-in fails with auth/unauthorized-domain.
 
 [build]
@@ -19,6 +19,12 @@
   # CRA treats lint warnings as build errors when CI is set. Keep the build
   # from breaking on a stray warning; real errors still fail.
   CI = "false"
+  # Firebase web config (apiKey, authDomain, projectId, messagingSenderId,
+  # appId) is PUBLIC by design -- it ships in every Firebase web client bundle.
+  # Access is controlled by Firestore Security Rules + the Auth authorized-
+  # domains allowlist, not by hiding these values. Tell Netlify's secrets
+  # scanner they are expected to appear in the build output / repo.
+  SECRETS_SCAN_OMIT_KEYS = "REACT_APP_FIREBASE_API_KEY,REACT_APP_FIREBASE_AUTH_DOMAIN,REACT_APP_FIREBASE_PROJECT_ID,REACT_APP_FIREBASE_STORAGE_BUCKET,REACT_APP_FIREBASE_MESSAGING_SENDER_ID,REACT_APP_FIREBASE_APP_ID"
 
 # Single-page app: serve index.html for any path so refreshes/deep links work.
 [[redirects]]

@@ -44,7 +44,7 @@ export default function Shell() {
                 <FiChevronLeft className="h-5 w-5" />
               </button>
             ) : (
-              <span className="px-1 text-sm font-semibold text-slate-700">Skrivetrening B2</span>
+              <span className="px-1 text-sm font-semibold text-slate-700">Emenda</span>
             )}
           </div>
 

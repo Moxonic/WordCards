@@ -13,8 +13,6 @@ const de: Partial<Record<MsgKey, string>> = {
   'common.sending': 'Wird gesendet…',
   'common.notFound': 'Text nicht gefunden.',
 
-  'login.tagline':
-    'Schreibe einen Text auf Norwegisch, erhalte Rückmeldung von einem KI-Lehrer und übe deine Fehler mit Karteikarten.',
   'login.google': 'Mit Google anmelden',
   'login.googleTitle': 'Mit deinem Google-Konto anmelden',
   'login.notConfigured':

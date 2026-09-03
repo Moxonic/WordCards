@@ -14,8 +14,6 @@ const nb = {
   'common.sending': 'Sender…',
   'common.notFound': 'Fant ikke teksten.',
 
-  'login.tagline':
-    'Skriv en tekst på norsk, få tilbakemelding fra en AI-lærer, og repeter feilene dine med flippkort.',
   'login.google': 'Logg inn med Google',
   'login.googleTitle': 'Logg inn med Google-kontoen din',
   'login.notConfigured':

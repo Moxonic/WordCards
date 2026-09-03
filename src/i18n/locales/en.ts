@@ -12,8 +12,6 @@ const en: Record<MsgKey, string> = {
   'common.sending': 'Sending…',
   'common.notFound': "Couldn't find that text.",
 
-  'login.tagline':
-    'Write a text in Norwegian, get feedback from an AI teacher, and drill your mistakes with flashcards.',
   'login.google': 'Sign in with Google',
   'login.googleTitle': 'Sign in with your Google account',
   'login.notConfigured':

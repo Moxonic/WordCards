@@ -12,8 +12,6 @@ const es: Partial<Record<MsgKey, string>> = {
   'common.sending': 'Enviando…',
   'common.notFound': 'No se encontró el texto.',
 
-  'login.tagline':
-    'Escribe un texto en noruego, recibe comentarios de un profesor con IA y repasa tus errores con tarjetas.',
   'login.google': 'Iniciar sesión con Google',
   'login.googleTitle': 'Inicia sesión con tu cuenta de Google',
   'login.notConfigured':

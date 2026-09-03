@@ -2,14 +2,10 @@
 
 ## 1. Firebase (reuse the existing project)
 
-Same project as before (`wordcards-2b9f0`). You need two things from it:
-
-- **Web config** – Project settings → General → Your apps → SDK setup → Config.
-  Put the six values in `.env` as `VITE_FIREBASE_*` (see `.env.example`).
-- **Service account key** – Project settings → **Service accounts** → *Generate
-  new private key*. This downloads a JSON file. Put its **entire contents on one
-  line** as `FIREBASE_SERVICE_ACCOUNT` in `.env` (local) and as a Netlify env var
-  (deploy). This is a real secret — never commit it, never prefix it `VITE_`.
+Same project as before (`wordcards-2b9f0`). You only need the **web config** –
+Project settings → General → Your apps → SDK setup → Config. Put the six values in
+`.env` as `VITE_FIREBASE_*` (see `.env.example`). No service account is needed –
+the grading function acts as the signed-in user.
 
 Make sure **Authentication → Sign-in method → Google** is enabled, and
 **Firestore** exists.
@@ -17,8 +13,8 @@ Make sure **Authentication → Sign-in method → Google** is enabled, and
 ## 2. Firestore rules
 
 `firestore.rules` locks every user to their own `users/{uid}/**`. Publish it:
-Firestore → **Rules** → paste → **Publish**. (The grading function writes with the
-Admin SDK and bypasses rules; the browser only touches its own data.)
+Firestore → **Rules** → paste → **Publish**. The grading function reads and
+writes with the user's own ID token, so these rules apply to it too.
 
 ## 3. Anthropic key
 
@@ -45,7 +41,8 @@ so use `netlify dev` when testing grading.
 - **Build** is configured in `netlify.toml` (`npm run build` → `dist/`, functions
   in `netlify/functions`). Netlify builds on push.
 - **Environment variables** (Site settings → Environment variables): the six
-  `VITE_FIREBASE_*`, plus `ANTHROPIC_API_KEY` and `FIREBASE_SERVICE_ACCOUNT`.
+  `VITE_FIREBASE_*`, plus `ANTHROPIC_API_KEY`. (The old `REACT_APP_FIREBASE_*`
+  vars can be deleted.)
 - **Authorized domain**: Firebase → Authentication → Settings → Authorized
   domains → add the `*.netlify.app` domain (and any custom domain), or Google
   sign-in fails with `auth/unauthorized-domain`.

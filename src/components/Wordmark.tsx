@@ -8,7 +8,7 @@ export default function Wordmark({ className = '' }: { className?: string }) {
         src="/logos/emenda-mark-black_1.svg"
         alt=""
         aria-hidden="true"
-        className="mr-[0.12em] inline-block h-[0.82em] w-auto"
+        className="mr-[0.12em] inline-block h-[0.9em] w-auto"
       />
       <span aria-hidden="true">menda</span>
     </span>

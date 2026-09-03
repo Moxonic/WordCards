@@ -237,16 +237,20 @@ export default async (req: Request): Promise<Response> => {
     const prefs = (await fsGet(token, `users/${uid}/meta/prefs`)) as { uiLang?: string } | null;
     const feedbackName = langName(String(prefs?.uiLang || w.targetLang || 'nb'));
 
-    const targetName = langName(String(w.targetLang || 'nb'));
+    const targetCode = String(w.targetLang || 'nb');
+    const targetName = langName(targetCode);
     const motherName = langName(String(w.motherLang || 'en'));
     const promptText = String(w.promptText || '(no task text)');
     const text = String(w.text || '');
 
+    const examiner =
+      targetCode === 'nb'
+        ? 'an experienced examiner for the Norwegian language test (Norskprøven) and a language teacher'
+        : `an experienced ${targetName} language examiner and teacher`;
     const system =
-      'You are an experienced examiner for the Norwegian language test (Norskprøven) and a ' +
-      'language teacher. You are assessing a text written by a candidate practising for level ' +
-      'B2. Be kind, concrete and encouraging, like a good teacher. Reply ONLY with valid JSON – ' +
-      'no text outside the JSON object.';
+      `You are ${examiner}. You are assessing a text written by a learner practising ${targetName} ` +
+      'at CEFR level B2. Be kind, concrete and encouraging, like a good teacher. Reply ONLY with ' +
+      'valid JSON – no text outside the JSON object.';
 
     const userMsg =
       `Writing language: ${targetName}\n` +

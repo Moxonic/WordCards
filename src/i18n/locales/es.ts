@@ -113,7 +113,7 @@ const es: Partial<Record<MsgKey, string>> = {
   'review.goAgain': 'Repasar de nuevo',
   'review.modeFlip': 'Girar',
   'review.modeWrite': 'Escribir',
-  'review.writePlaceholder': 'Escribe la frase noruega correcta…',
+  'review.writePlaceholder': 'Escribe la frase correcta…',
   'review.check': 'Comprobar',
   'review.correct': '✓ ¡Correcto!',
   'review.knownCount': 'sé {n}/{total}',

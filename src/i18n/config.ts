@@ -12,23 +12,8 @@ export interface UiLang {
 export const UI_LANGS: UiLang[] = [
   { code: 'nb', native: 'Norsk (bokmål)', english: 'Norwegian' },
   { code: 'en', native: 'English', english: 'English' },
-  { code: 'en-simple', native: 'Simple English', english: 'Simple English' },
-  { code: 'de', native: 'Deutsch', english: 'German' },
-  { code: 'pl', native: 'Polski', english: 'Polish' },
-  { code: 'lt', native: 'Lietuvių', english: 'Lithuanian' },
   { code: 'es', native: 'Español', english: 'Spanish' },
-  { code: 'pt', native: 'Português', english: 'Portuguese' },
-  { code: 'fr', native: 'Français', english: 'French' },
-  { code: 'it', native: 'Italiano', english: 'Italian' },
-  { code: 'uk', native: 'Українська', english: 'Ukrainian' },
-  { code: 'ru', native: 'Русский', english: 'Russian' },
-  { code: 'ar', native: 'العربية', english: 'Arabic', rtl: true },
-  { code: 'fa', native: 'فارسی', english: 'Persian / Dari', rtl: true },
-  { code: 'ti', native: 'ትግርኛ', english: 'Tigrinya' },
-  { code: 'so', native: 'Soomaali', english: 'Somali' },
-  { code: 'th', native: 'ไทย', english: 'Thai' },
-  { code: 'vi', native: 'Tiếng Việt', english: 'Vietnamese' },
-  { code: 'tr', native: 'Türkçe', english: 'Turkish' },
+  { code: 'de', native: 'Deutsch', english: 'German' },
 ];
 
 export const UI_LANG_CODES = UI_LANGS.map((l) => l.code);

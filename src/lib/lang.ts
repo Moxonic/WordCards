@@ -9,28 +9,16 @@ export interface Lang {
 
 export const MOTHER_LANGS: Lang[] = [
   { code: 'en', label: 'English', name: 'English' },
-  { code: 'de', label: 'German (Deutsch)', name: 'German' },
-  { code: 'pl', label: 'Polish (Polski)', name: 'Polish' },
-  { code: 'lt', label: 'Lithuanian (Lietuvių)', name: 'Lithuanian' },
-  { code: 'es', label: 'Spanish (Español)', name: 'Spanish' },
-  { code: 'pt', label: 'Portuguese (Português)', name: 'Portuguese' },
-  { code: 'fr', label: 'French (Français)', name: 'French' },
-  { code: 'it', label: 'Italian (Italiano)', name: 'Italian' },
-  { code: 'uk', label: 'Ukrainian (Українська)', name: 'Ukrainian' },
-  { code: 'ru', label: 'Russian (Русский)', name: 'Russian' },
-  { code: 'ar', label: 'Arabic (العربية)', name: 'Arabic' },
-  { code: 'fa', label: 'Persian / Dari (فارسی)', name: 'Persian' },
-  { code: 'ti', label: 'Tigrinya (ትግርኛ)', name: 'Tigrinya' },
-  { code: 'so', label: 'Somali (Soomaali)', name: 'Somali' },
-  { code: 'th', label: 'Thai (ไทย)', name: 'Thai' },
-  { code: 'vi', label: 'Vietnamese (Tiếng Việt)', name: 'Vietnamese' },
-  { code: 'tr', label: 'Turkish (Türkçe)', name: 'Turkish' },
-  { code: 'en-simple', label: 'Simple English', name: 'simple, plain English' },
+  { code: 'es', label: 'Español', name: 'Spanish' },
+  { code: 'de', label: 'Deutsch', name: 'German' },
+  { code: 'nb', label: 'Norsk (bokmål)', name: 'Norwegian Bokmål' },
 ];
 
 export const TARGET_LANGS: (Lang & { available: boolean })[] = [
   { code: 'nb', label: 'Norsk (bokmål)', name: 'Norwegian Bokmål', available: true },
-  { code: 'nn', label: 'Norsk (nynorsk)', name: 'Norwegian Nynorsk', available: false },
+  { code: 'en', label: 'English', name: 'English', available: true },
+  { code: 'es', label: 'Español', name: 'Spanish', available: true },
+  { code: 'de', label: 'Deutsch', name: 'German', available: true },
 ];
 
 export function motherLangName(code: string): string {

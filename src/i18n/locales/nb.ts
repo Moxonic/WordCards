@@ -115,7 +115,7 @@ const nb = {
   'review.goAgain': 'Gå gjennom igjen',
   'review.modeFlip': 'Snu',
   'review.modeWrite': 'Skriv',
-  'review.writePlaceholder': 'Skriv den riktige norske setningen…',
+  'review.writePlaceholder': 'Skriv den riktige setningen…',
   'review.check': 'Sjekk',
   'review.correct': '✓ Riktig!',
   'review.knownCount': 'kan {n}/{total}',

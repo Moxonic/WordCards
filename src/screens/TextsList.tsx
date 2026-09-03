@@ -6,7 +6,7 @@ import { subscribeWritings } from '../data/writings';
 import type { Writing } from '../types';
 import Spinner from '../components/Spinner';
 
-const DATE_LOCALE: Record<string, string> = { nb: 'nb-NO', 'en-simple': 'en' };
+const DATE_LOCALE: Record<string, string> = { nb: 'nb-NO' };
 
 function fmtDate(ms: number, lang: string): string {
   const locale = DATE_LOCALE[lang] ?? lang;

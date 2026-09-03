@@ -114,7 +114,7 @@ const de: Partial<Record<MsgKey, string>> = {
   'review.goAgain': 'Nochmal durchgehen',
   'review.modeFlip': 'Umdrehen',
   'review.modeWrite': 'Schreiben',
-  'review.writePlaceholder': 'Tippe den richtigen norwegischen Satz…',
+  'review.writePlaceholder': 'Tippe den richtigen Satz…',
   'review.check': 'Prüfen',
   'review.correct': '✓ Richtig!',
   'review.knownCount': 'kann {n}/{total}',

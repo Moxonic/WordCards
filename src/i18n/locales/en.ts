@@ -113,7 +113,7 @@ const en: Record<MsgKey, string> = {
   'review.goAgain': 'Go through again',
   'review.modeFlip': 'Flip',
   'review.modeWrite': 'Write',
-  'review.writePlaceholder': 'Type the correct Norwegian sentence…',
+  'review.writePlaceholder': 'Type the correct sentence…',
   'review.check': 'Check',
   'review.correct': '✓ Correct!',
   'review.knownCount': 'know {n}/{total}',

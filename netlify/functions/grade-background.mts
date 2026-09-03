@@ -6,11 +6,19 @@ const GRADE_MODEL = 'claude-sonnet-5'; // one-line switch: claude-opus-5 / claud
 const DAILY_CAP = 12;
 const MAX_MISTAKES = 25;
 
-const FS_ROOT = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents`;
+// FS_DOC_PREFIX is the Firestore *resource name* prefix (used inside :commit
+// write bodies). FS_ROOT is the HTTP URL prefix (used for fetch()).
+const FS_DOC_PREFIX = `projects/${PROJECT_ID}/databases/(default)/documents`;
+const FS_ROOT = `https://firestore.googleapis.com/v1/${FS_DOC_PREFIX}`;
 const CERTS_URL =
   'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
 
-const anthropic = new Anthropic(); // reads ANTHROPIC_API_KEY
+// Workspace-scoped ("identity-linked") API keys require this header.
+const anthropic = new Anthropic({
+  defaultHeaders: process.env.ANTHROPIC_WORKSPACE_ID
+    ? { 'anthropic-workspace-id': process.env.ANTHROPIC_WORKSPACE_ID }
+    : undefined,
+});
 
 // ---------------------------------------------------------------- token verify
 
@@ -96,7 +104,7 @@ interface FsWrite {
 async function fsCommit(token: string, writes: FsWrite[]): Promise<void> {
   const body = {
     writes: writes.map((w) => ({
-      update: { name: `${FS_ROOT}/${w.path}`, fields: w.fields },
+      update: { name: `${FS_DOC_PREFIX}/${w.path}`, fields: w.fields },
       ...(w.updateMask ? { updateMask: { fieldPaths: w.updateMask } } : {}),
     })),
   };

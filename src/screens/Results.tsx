@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { subscribeWriting } from '../data/writings';
+import { subscribeWriting, retryGrading, markWritingError } from '../data/writings';
 import type { Writing } from '../types';
 import Spinner from '../components/Spinner';
 import DiffText from '../components/DiffText';
@@ -19,11 +19,43 @@ export default function Results() {
   const nav = useNavigate();
   const [writing, setWriting] = useState<Writing | null | undefined>(undefined);
   const [view, setView] = useState<'corrected' | 'yours'>('corrected');
+  const [slow, setSlow] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  const graceStart = useRef<number | null>(null);
 
   useEffect(() => {
     if (!user) return;
     return subscribeWriting(user.uid, id, setWriting);
   }, [user, id]);
+
+  // Watchdog: if grading hasn't finished after 2 min, stop waiting so the user
+  // isn't stuck on a spinner forever (e.g. the function never ran).
+  useEffect(() => {
+    if (writing?.status !== 'grading') {
+      graceStart.current = null;
+      setSlow(false);
+      return;
+    }
+    if (graceStart.current == null) graceStart.current = Date.now();
+    const softId = window.setTimeout(() => setSlow(true), 25_000);
+    const hardId = window.setTimeout(() => {
+      if (user) markWritingError(user.uid, id, 'Rettingen svarte ikke. Prøv igjen.');
+    }, 120_000);
+    return () => {
+      window.clearTimeout(softId);
+      window.clearTimeout(hardId);
+    };
+  }, [writing?.status, user, id]);
+
+  async function doRetry() {
+    if (!user) return;
+    setRetrying(true);
+    try {
+      await retryGrading(user.uid, id, await user.getIdToken());
+    } finally {
+      setRetrying(false);
+    }
+  }
 
   if (writing === undefined) return <Spinner label="Laster…" />;
   if (writing === null)
@@ -31,9 +63,35 @@ export default function Results() {
 
   if (writing.status === 'grading') {
     return (
-      <div className="p-6">
+      <div className="flex flex-col items-center p-6 text-center">
         <h2 className="mb-1 text-lg font-semibold text-slate-700">{writing.title}</h2>
         <Spinner label="Læreren leser teksten din… dette tar et halvt minutt." />
+        {slow && (
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <p className="text-sm text-slate-500">Tar det for lang tid?</p>
+            <div className="flex gap-2">
+              <button
+                onClick={doRetry}
+                disabled={retrying}
+                className="rounded-full bg-slate-800 px-4 py-2 text-sm text-white disabled:opacity-50"
+              >
+                {retrying ? 'Sender…' : 'Prøv igjen'}
+              </button>
+              <button
+                onClick={() =>
+                  user && markWritingError(user.uid, id, 'Avbrutt.').then(() => nav(`/write/${id}`))
+                }
+                className="rounded-full bg-white px-4 py-2 text-sm text-slate-600 ring-1 ring-slate-200"
+              >
+                Avbryt
+              </button>
+            </div>
+            <p className="mt-1 max-w-xs text-xs text-slate-400">
+              Retteren kjører som en Netlify-funksjon. Start appen med{' '}
+              <code>npm run netlify-dev</code> (port 8888), ikke <code>npm run dev</code>.
+            </p>
+          </div>
+        )}
       </div>
     );
   }
@@ -42,12 +100,21 @@ export default function Results() {
     return (
       <div className="flex flex-col items-center gap-3 p-8 text-center">
         <p className="text-slate-700">{writing.errorMessage || 'Noe gikk galt under rettingen.'}</p>
-        <Link
-          to={`/write/${id}`}
-          className="rounded-full bg-slate-800 px-5 py-2.5 text-sm font-medium text-white"
-        >
-          Tilbake til teksten
-        </Link>
+        <div className="flex gap-2">
+          <button
+            onClick={doRetry}
+            disabled={retrying}
+            className="rounded-full bg-slate-800 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+          >
+            {retrying ? 'Sender…' : 'Prøv igjen'}
+          </button>
+          <Link
+            to={`/write/${id}`}
+            className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200"
+          >
+            Tilbake til teksten
+          </Link>
+        </div>
       </div>
     );
   }

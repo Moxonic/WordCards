@@ -127,25 +127,44 @@ export async function submitForGrading(
     submittedAt: now,
     updatedAt: now,
   });
+  await invokeGrading(uid, id, idToken);
+}
 
+/** Fire the grading function. Marks the writing 'error' if it can't be reached. */
+export async function invokeGrading(uid: string, id: string, idToken: string): Promise<void> {
   try {
     const res = await fetch('/.netlify/functions/grade-background', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ uid, writingId: id, idToken }),
     });
-    // Background functions answer 202 with no useful body; only a transport
-    // failure matters here.
+    // Background functions answer 202 with no useful body.
     if (!res.ok && res.status !== 202) {
       throw new Error(`Kunne ikke starte retting (${res.status})`);
     }
-  } catch (err) {
-    await updateDoc(writingRef(uid, id), {
-      status: 'error',
-      errorMessage:
-        'Fikk ikke kontakt med retteren. Sjekk nettforbindelsen og prøv igjen.',
-      updatedAt: Date.now(),
-    });
-    throw err;
+  } catch {
+    await markWritingError(
+      uid,
+      id,
+      'Fikk ikke kontakt med retteren. Kjører du «npm run netlify-dev»? Prøv igjen.',
+    );
   }
+}
+
+export async function markWritingError(uid: string, id: string, message: string): Promise<void> {
+  await updateDoc(writingRef(uid, id), {
+    status: 'error',
+    errorMessage: message,
+    updatedAt: Date.now(),
+  });
+}
+
+/** Re-run grading on a text that's stuck or errored. */
+export async function retryGrading(uid: string, id: string, idToken: string): Promise<void> {
+  await updateDoc(writingRef(uid, id), {
+    status: 'grading',
+    errorMessage: null,
+    updatedAt: Date.now(),
+  });
+  await invokeGrading(uid, id, idToken);
 }

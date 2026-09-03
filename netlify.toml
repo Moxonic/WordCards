@@ -22,7 +22,10 @@
   NODE_VERSION = "20"
   # Firebase web config is public by design (security is Firestore rules + the
   # Auth domain allowlist). Tell the secrets scanner it's expected in the bundle.
-  SECRETS_SCAN_OMIT_KEYS = "VITE_FIREBASE_API_KEY,VITE_FIREBASE_AUTH_DOMAIN,VITE_FIREBASE_PROJECT_ID,VITE_FIREBASE_STORAGE_BUCKET,VITE_FIREBASE_MESSAGING_SENDER_ID,VITE_FIREBASE_APP_ID"
+  # The REACT_APP_* names are stale vars from the old CRA app still set in the
+  # Netlify UI; the scanner matches their values against the Vite bundle. Safe to
+  # drop from this list once they're removed under Site settings -> Env variables.
+  SECRETS_SCAN_OMIT_KEYS = "VITE_FIREBASE_API_KEY,VITE_FIREBASE_AUTH_DOMAIN,VITE_FIREBASE_PROJECT_ID,VITE_FIREBASE_STORAGE_BUCKET,VITE_FIREBASE_MESSAGING_SENDER_ID,VITE_FIREBASE_APP_ID,REACT_APP_FIREBASE_API_KEY,REACT_APP_FIREBASE_AUTH_DOMAIN,REACT_APP_FIREBASE_PROJECT_ID,REACT_APP_FIREBASE_STORAGE_BUCKET,REACT_APP_FIREBASE_MESSAGING_SENDER_ID,REACT_APP_FIREBASE_APP_ID"
 
 # SPA fallback (function routes are matched before this).
 [[redirects]]

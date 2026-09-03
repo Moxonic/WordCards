@@ -2,24 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "~react-image-gallery/styles/css/image-gallery.css";
-
 :root {
-    --front-side: #fabb0d;
-    --back-side: #52e239;
-  }
-  
-
-
-
-.frontSideColor{
-    background-color: var(--front-side);
-}
-.backSideColor{
-    background-color: var(--back-side);
+  color-scheme: light;
 }
 
-input{margin: 5px;
-background-color: rgb(249, 249, 249);
-border-radius: 50px;
-text-align: center;}
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #475569;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+textarea {
+  font-family: inherit;
+}

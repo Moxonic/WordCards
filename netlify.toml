@@ -1,32 +1,31 @@
-# Netlify build config. The site builds on every push to the connected branch;
-# you do NOT need to run `npm run build` yourself.
+# Netlify builds on every push. Vite output goes to dist/; the grading function
+# lives in netlify/functions and is invoked at /.netlify/functions/grade-background.
 #
-# Still required in the Netlify UI (Site settings -> Environment variables),
-# because .env is gitignored -- add all six:
-#   REACT_APP_FIREBASE_API_KEY, REACT_APP_FIREBASE_AUTH_DOMAIN,
-#   REACT_APP_FIREBASE_PROJECT_ID, REACT_APP_FIREBASE_STORAGE_BUCKET,
-#   REACT_APP_FIREBASE_MESSAGING_SENDER_ID, REACT_APP_FIREBASE_APP_ID
+# Set in the Netlify UI (Site settings -> Environment variables):
+#   Client (bundled, must be VITE_-prefixed):
+#     VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID,
+#     VITE_FIREBASE_STORAGE_BUCKET, VITE_FIREBASE_MESSAGING_SENDER_ID, VITE_FIREBASE_APP_ID
+#   Server only (never bundled):
+#     ANTHROPIC_API_KEY           your Anthropic API key
+#     FIREBASE_SERVICE_ACCOUNT    the service-account JSON (one line)
 #
-# And add the deployed domain to Firebase -> Authentication -> Settings ->
-# Authorized domains, or Google sign-in fails with auth/unauthorized-domain.
+# Also add the deployed domain to Firebase -> Authentication -> Authorized domains.
 
 [build]
   command = "npm run build"
-  publish = "build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
 
 [build.environment]
   NODE_VERSION = "20"
-  # CRA treats lint warnings as build errors when CI is set. Keep the build
-  # from breaking on a stray warning; real errors still fail.
-  CI = "false"
-  # Firebase web config (apiKey, authDomain, projectId, messagingSenderId,
-  # appId) is PUBLIC by design -- it ships in every Firebase web client bundle.
-  # Access is controlled by Firestore Security Rules + the Auth authorized-
-  # domains allowlist, not by hiding these values. Tell Netlify's secrets
-  # scanner they are expected to appear in the build output / repo.
-  SECRETS_SCAN_OMIT_KEYS = "REACT_APP_FIREBASE_API_KEY,REACT_APP_FIREBASE_AUTH_DOMAIN,REACT_APP_FIREBASE_PROJECT_ID,REACT_APP_FIREBASE_STORAGE_BUCKET,REACT_APP_FIREBASE_MESSAGING_SENDER_ID,REACT_APP_FIREBASE_APP_ID"
+  # Firebase web config is public by design (security is Firestore rules + the
+  # Auth domain allowlist). Tell the secrets scanner it's expected in the bundle.
+  SECRETS_SCAN_OMIT_KEYS = "VITE_FIREBASE_API_KEY,VITE_FIREBASE_AUTH_DOMAIN,VITE_FIREBASE_PROJECT_ID,VITE_FIREBASE_STORAGE_BUCKET,VITE_FIREBASE_MESSAGING_SENDER_ID,VITE_FIREBASE_APP_ID"
 
-# Single-page app: serve index.html for any path so refreshes/deep links work.
+# SPA fallback (function routes are matched before this).
 [[redirects]]
   from = "/*"
   to = "/index.html"

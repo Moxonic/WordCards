@@ -1,74 +1,41 @@
-# WordCards
+# Skrivetrening B2
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/c6eb9abe-658d-4b0f-87ae-e4f94185274c/deploy-status)](https://app.netlify.com/projects/mywordcards/deploys)
 
-A vocabulary trainer: flip cards, swipe to grade yourself, and let spaced
-repetition decide when each word comes back.
+A writing tutor for the **Norskprøve B2**. Write an email or a discussion text in
+Norwegian, get a teacher-style assessment from Claude, then drill your own
+mistakes with flashcards.
 
-- **Google sign-in + cloud sync** (Firebase Auth + Firestore) — cards and review
-  progress follow your account across devices.
-- **Swipe review** — tap a card to flip, swipe **right** if you knew it, **left**
-  to keep practising. A round isn't done until every card has been answered
-  right enough times; weak/lapsed cards need more, and no card repeats
-  back-to-back (`src/lib/session.js`). Between rounds, day-scale spacing uses
-  **Leitner boxes** (`src/lib/leitner.js`, 1 / 2 / 4 / 7 / 14 days).
-- **Collections** — group cards, review one at a time, and **share a collection**
-  with a friend via a code they import as their own copy.
-- **Starter packs** — 100-card decks: common Norwegian, sophisticated Norwegian,
-  technical theatre jargon (`src/data/starterDecks.js`).
-- **Manual entry** — the `+` button adds a card by hand.
-- **Companion Chrome extension** (`extension/`) — pushes words you translate on
-  `translate.google.com` into your account (best-effort; Google's markup is
-  unstable).
+- **Sign in with Google** (Firebase Auth).
+- **Write** – pick target language (Bokmål now, more later), mother tongue and a
+  title; choose an example task in the style of the exam, or write your own.
+- **Get feedback** – Claude returns a CEFR-level estimate, a one-line note per
+  category (content / grammar / vocabulary / spelling), short "what went well /
+  what to check" feedback, and a fully corrected version. Every grammar and
+  spelling fix is saved with a translation in your mother tongue.
+- **Review** – per text, repeatable. Flashcards show the meaning in your mother
+  tongue; flip to the correct Norwegian (with your original struck through + a
+  note). Type it or just flip; swipe left to repeat, right into the known pile.
+  Same Leitner + mastery-loop engine as before (`src/lib/leitner.ts`,
+  `src/lib/session.ts`).
+- **Try again** – any task can be re-attempted from a blank page; old attempts
+  stay in *Mine tekster*.
 
-## First-time setup
+## Stack
 
-You must create a Firebase project and (for the extension) one OAuth client.
-**See [`SETUP.md`](./SETUP.md).** Then:
+Vite + React + TypeScript · Tailwind · Firebase (Auth + Firestore) · one Netlify
+background function (`netlify/functions/grade-background.mts`) that calls the
+Anthropic API and writes the result back to Firestore.
+
+## Develop
 
 ```bash
-cp .env.example .env      # fill in your Firebase web config
+cp .env.example .env      # fill in VITE_FIREBASE_*, ANTHROPIC_API_KEY, FIREBASE_SERVICE_ACCOUNT
 npm install
-npm start
-npm test                  # runs the Leitner + session unit tests
+npm run netlify-dev       # Vite + the grading function together (needs `netlify-cli`)
+# or `npm run dev` for the UI only (grading calls will 404)
+npm test                  # Vitest: leitner + session
 ```
 
-## Deploy (Netlify)
-
-Netlify builds on every push — build settings live in [`netlify.toml`](./netlify.toml)
-(`npm run build` → `build/`, with an SPA redirect). You don't build locally.
-
-Two one-time steps in the dashboards:
-
-1. **Netlify → Site settings → Environment variables** — add all six
-   `REACT_APP_FIREBASE_*` values (`.env` is gitignored, so the build has none).
-2. **Firebase → Authentication → Settings → Authorized domains** — add the
-   `*.netlify.app` domain (and any custom domain) or Google sign-in fails with
-   `auth/unauthorized-domain`.
-
----
-
-## Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-### Available Scripts
-
-In the project directory, you can run:
-
-#### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-#### `npm test`
-
-Launches the test runner in the interactive watch mode.
-
-#### `npm run build`
-
-Builds the app for production to the `build` folder.
-
-#### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Full setup (Firebase project, service account, Netlify env vars, authorized
+domains) is in [`SETUP.md`](./SETUP.md).

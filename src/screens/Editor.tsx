@@ -116,7 +116,7 @@ export default function Editor() {
           onClick={submit}
           disabled={!enough || submitting}
           title={enough ? t('editor.submitTitleOk') : t('editor.submitTitleNo')}
-          className="rounded-full bg-slate-800 px-5 py-2.5 text-sm font-medium text-white shadow transition active:scale-95 hover:bg-slate-700 disabled:opacity-50"
+          className="rounded-none bg-slate-800 px-5 py-2.5 text-sm font-medium text-white shadow transition active:scale-95 hover:bg-slate-700 disabled:opacity-50"
         >
           {submitting ? t('common.sending') : t('editor.submit')}
         </button>

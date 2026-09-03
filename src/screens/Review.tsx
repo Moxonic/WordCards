@@ -125,7 +125,7 @@ export default function Review() {
         </p>
         <button
           onClick={() => build(true)}
-          className="mt-2 rounded-full bg-slate-800 px-6 py-2.5 font-medium text-white shadow-lg hover:bg-slate-700"
+          className="mt-2 rounded-none bg-slate-800 px-6 py-2.5 font-medium text-white shadow-lg hover:bg-slate-700"
         >
           {t('review.goAgain')}
         </button>
@@ -162,14 +162,14 @@ export default function Review() {
   );
 
   return (
-    <div className="flex h-full w-full select-none flex-col bg-slate-100 px-5 pb-5 pt-3">
+    <div className="flex h-full w-full select-none flex-col bg-slate-50 px-5 pb-5 pt-3">
       <div className="mb-1 flex items-center justify-between text-[11px] font-medium text-slate-400">
         <span>{t('review.knownCount', { n: session.masteredCount, total: session.total })}</span>
         <span>{Math.round(progress * 100)}%</span>
       </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+      <div className="h-1.5 w-full overflow-hidden rounded-none bg-slate-200">
         <div
-          className="h-full rounded-full bg-emerald-500 transition-all duration-300"
+          className="h-full rounded-none bg-emerald-500 transition-all duration-300"
           style={{ width: `${Math.round(progress * 100)}%` }}
         />
       </div>
@@ -177,7 +177,7 @@ export default function Review() {
       <div className="my-3 flex justify-center gap-2 text-xs">
         <button
           onClick={() => setMode('flip')}
-          className={`rounded-full px-3 py-1 ${mode === 'flip' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}
+          className={`rounded-none px-3 py-1 ${mode === 'flip' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}
         >
           {t('review.modeFlip')}
         </button>
@@ -188,7 +188,7 @@ export default function Review() {
             setTyped('');
             setFlip({ id: null, on: false });
           }}
-          className={`rounded-full px-3 py-1 ${mode === 'write' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}
+          className={`rounded-none px-3 py-1 ${mode === 'write' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}
         >
           {t('review.modeWrite')}
         </button>
@@ -241,7 +241,7 @@ export default function Review() {
             <button
               onClick={checkTyped}
               disabled={!typed.trim()}
-              className="self-center rounded-full bg-slate-800 px-5 py-1.5 text-sm text-white disabled:opacity-50"
+              className="self-center rounded-none bg-slate-800 px-5 py-1.5 text-sm text-white disabled:opacity-50"
             >
               {t('review.check')}
             </button>
@@ -264,7 +264,7 @@ export default function Review() {
           onClick={() => handleAnswer(false)}
           aria-label={t('review.cantDo')}
           title={t('review.cantDoTitle')}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-slate-200 transition active:scale-95 hover:ring-red-300"
+          className="flex h-14 w-14 items-center justify-center rounded-none border border-slate-300 bg-white transition active:scale-95 hover:border-red-400 hover:bg-red-50"
         >
           <AiOutlineClose className="h-6 w-6 text-red-500" />
         </button>
@@ -272,9 +272,9 @@ export default function Review() {
           onClick={() => handleAnswer(true)}
           aria-label={t('review.canDo')}
           title={t('review.canDoTitle')}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-slate-200 transition active:scale-95 hover:ring-emerald-300"
+          className="flex h-14 w-14 items-center justify-center rounded-none border border-slate-300 bg-white transition active:scale-95 hover:border-emerald-500 hover:bg-emerald-50"
         >
-          <AiOutlineCheck className="h-6 w-6 text-emerald-500" />
+          <AiOutlineCheck className="h-6 w-6 text-emerald-600" />
         </button>
       </div>
 

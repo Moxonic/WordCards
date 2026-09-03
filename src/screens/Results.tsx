@@ -75,7 +75,7 @@ export default function Results() {
               <button
                 onClick={doRetry}
                 disabled={retrying}
-                className="rounded-full bg-slate-800 px-4 py-2 text-sm text-white disabled:opacity-50"
+                className="rounded-none bg-slate-800 px-4 py-2 text-sm text-white disabled:opacity-50"
               >
                 {retrying ? t('common.sending') : t('common.retry')}
               </button>
@@ -86,7 +86,7 @@ export default function Results() {
                     nav(`/write/${id}`),
                   )
                 }
-                className="rounded-full bg-white px-4 py-2 text-sm text-slate-600 ring-1 ring-slate-200"
+                className="rounded-none bg-white px-4 py-2 text-sm text-slate-600 ring-1 ring-slate-200"
               >
                 {t('common.cancel')}
               </button>
@@ -106,13 +106,13 @@ export default function Results() {
           <button
             onClick={doRetry}
             disabled={retrying}
-            className="rounded-full bg-slate-800 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+            className="rounded-none bg-slate-800 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
           >
             {retrying ? t('common.sending') : t('common.retry')}
           </button>
           <Link
             to={`/write/${id}`}
-            className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200"
+            className="rounded-none bg-white px-5 py-2.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200"
           >
             {t('results.backToText')}
           </Link>
@@ -127,7 +127,7 @@ export default function Results() {
         <p>{t('results.notSubmitted')}</p>
         <Link
           to={`/write/${id}`}
-          className="rounded-full bg-slate-800 px-5 py-2.5 text-sm font-medium text-white"
+          className="rounded-none bg-slate-800 px-5 py-2.5 text-sm font-medium text-white"
         >
           {t('results.openInEditor')}
         </Link>
@@ -182,7 +182,7 @@ export default function Results() {
         <div className="mb-2 flex gap-2 text-xs">
           <button
             onClick={() => setView('corrected')}
-            className={`rounded-full px-3 py-1 ${
+            className={`rounded-none px-3 py-1 ${
               view === 'corrected' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'
             }`}
           >
@@ -190,7 +190,7 @@ export default function Results() {
           </button>
           <button
             onClick={() => setView('yours')}
-            className={`rounded-full px-3 py-1 ${
+            className={`rounded-none px-3 py-1 ${
               view === 'yours' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'
             }`}
           >
@@ -212,7 +212,7 @@ export default function Results() {
         {writing.mistakeCount > 0 ? (
           <Link
             to={`/review/${id}`}
-            className="rounded-full bg-slate-800 px-5 py-3 text-center font-medium text-white shadow-lg active:scale-95 hover:bg-slate-700"
+            className="rounded-none bg-slate-800 px-5 py-3 text-center font-medium text-white shadow-lg active:scale-95 hover:bg-slate-700"
           >
             {tp('results.reviewN', writing.mistakeCount)}
           </Link>
@@ -221,7 +221,7 @@ export default function Results() {
         )}
         <button
           onClick={() => nav(`/new?attemptOf=${id}`)}
-          className="rounded-full bg-white px-5 py-3 text-center font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+          className="rounded-none bg-white px-5 py-3 text-center font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
         >
           {t('results.tryAgain')}
         </button>

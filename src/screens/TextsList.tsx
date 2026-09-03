@@ -69,7 +69,7 @@ export default function TextsList() {
         <p>{t('texts.empty')}</p>
         <Link
           to="/new"
-          className="rounded-full bg-slate-800 px-5 py-2.5 text-sm font-medium text-white"
+          className="rounded-none bg-slate-800 px-5 py-2.5 text-sm font-medium text-white"
         >
           {t('texts.writeFirst')}
         </Link>
@@ -95,7 +95,7 @@ export default function TextsList() {
               onClick={() => setConfirmId((id) => (id === w.id ? null : w.id))}
               title={t('texts.delete')}
               aria-label={t('texts.delete')}
-              className="shrink-0 rounded-full p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+              className="shrink-0 rounded-none p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
             >
               <FiTrash2 className="h-4 w-4" />
             </button>
@@ -107,13 +107,13 @@ export default function TextsList() {
               <button
                 onClick={() => onDelete(w.id)}
                 disabled={deletingId === w.id}
-                className="rounded-full bg-red-600 px-3 py-1 text-white hover:bg-red-700 disabled:opacity-50"
+                className="rounded-none bg-red-600 px-3 py-1 text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {deletingId === w.id ? t('common.sending') : t('texts.delete')}
               </button>
               <button
                 onClick={() => setConfirmId(null)}
-                className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
+                className="rounded-none bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
               >
                 {t('common.cancel')}
               </button>
@@ -123,7 +123,7 @@ export default function TextsList() {
               {w.status === 'graded' && (
                 <Link
                   to={`/results/${w.id}`}
-                  className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
+                  className="rounded-none bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
                 >
                   {t('texts.seeFeedback')}
                 </Link>
@@ -131,7 +131,7 @@ export default function TextsList() {
               {w.status === 'graded' && w.mistakeCount > 0 && (
                 <Link
                   to={`/review/${w.id}`}
-                  className="rounded-full bg-slate-800 px-3 py-1 text-white hover:bg-slate-700"
+                  className="rounded-none bg-slate-800 px-3 py-1 text-white hover:bg-slate-700"
                 >
                   {t('texts.reviewMistakes')}
                 </Link>
@@ -139,7 +139,7 @@ export default function TextsList() {
               {(w.status === 'draft' || w.status === 'error') && (
                 <Link
                   to={`/write/${w.id}`}
-                  className="rounded-full bg-slate-800 px-3 py-1 text-white hover:bg-slate-700"
+                  className="rounded-none bg-slate-800 px-3 py-1 text-white hover:bg-slate-700"
                 >
                   {t('texts.keepWriting')}
                 </Link>
@@ -147,14 +147,14 @@ export default function TextsList() {
               {w.status === 'grading' && (
                 <Link
                   to={`/results/${w.id}`}
-                  className="rounded-full bg-slate-100 px-3 py-1 text-slate-600"
+                  className="rounded-none bg-slate-100 px-3 py-1 text-slate-600"
                 >
                   {t('texts.follow')}
                 </Link>
               )}
               <button
                 onClick={() => nav(`/new?attemptOf=${w.id}`)}
-                className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
+                className="rounded-none bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
               >
                 {t('texts.tryAgain')}
               </button>

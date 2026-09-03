@@ -97,16 +97,16 @@ export default function SwipeCard({
         cursor: disabled ? 'default' : 'grab',
         willChange: 'transform',
       }}
-      className="relative h-full w-full rounded-[1.75rem]"
+      className="relative h-full w-full rounded-[3px]"
     >
       {children}
       {hint && (
         <div
           style={{ opacity: 0.35 + strength * 0.65 }}
-          className={`pointer-events-none absolute top-6 rounded-xl border-[3px] bg-white/40 px-4 py-1.5 text-lg font-extrabold tracking-wide backdrop-blur-sm ${
+          className={`pointer-events-none absolute top-6 rounded-none border bg-white/50 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] backdrop-blur-sm ${
             hint === 'yes'
-              ? 'right-6 -rotate-12 border-emerald-500 text-emerald-600'
-              : 'left-6 rotate-12 border-red-500 text-red-600'
+              ? 'right-6 -rotate-6 border-emerald-600 text-emerald-700'
+              : 'left-6 rotate-6 border-red-600 text-red-700'
           }`}
         >
           {hint === 'yes' ? hintYes : hintNo}

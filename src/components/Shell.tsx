@@ -31,27 +31,29 @@ export default function Shell() {
   }, [menuOpen]);
 
   return (
-    <div className="flex h-full w-full justify-center bg-slate-500">
-      <div className="relative flex h-full w-full max-w-[480px] flex-col overflow-hidden bg-slate-100 shadow-2xl">
-        <nav className="flex items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2.5">
+    <div className="flex h-full w-full justify-center bg-slate-200">
+      <div className="relative flex h-full w-full max-w-[480px] flex-col overflow-hidden bg-slate-50 ring-1 ring-slate-200">
+        <nav className="flex items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-3">
           <div className="flex min-w-0 items-center gap-1">
             {!atHome ? (
               <button
                 onClick={() => nav(-1)}
                 title={t('common.back')}
-                className="rounded-full p-1.5 text-slate-500 hover:bg-slate-100"
+                className="rounded-none p-1.5 text-slate-500 hover:bg-slate-100"
               >
                 <FiChevronLeft className="h-5 w-5" />
               </button>
             ) : (
-              <span className="px-1 text-sm font-semibold text-slate-700">Emenda</span>
+              <span className="px-1 text-sm font-medium uppercase tracking-[0.28em] text-slate-700">
+                Emenda
+              </span>
             )}
           </div>
 
           <div className="flex items-center gap-1">
             <Link
               to="/texts"
-              className="rounded-full px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100"
+              className="rounded-none px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100"
             >
               {t('shell.myTexts')}
             </Link>
@@ -60,17 +62,17 @@ export default function Shell() {
               <button
                 onClick={() => setMenuOpen((v) => !v)}
                 title={t('common.account')}
-                className="flex items-center gap-1 rounded-full pr-1 hover:bg-slate-100"
+                className="flex items-center gap-1 rounded-none pr-1 hover:bg-slate-100"
               >
                 {user?.photoURL ? (
                   <img
                     src={user.photoURL}
                     alt=""
-                    className="h-8 w-8 rounded-full"
+                    className="h-8 w-8 rounded-none grayscale"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-400 text-sm text-white">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-none bg-slate-300 text-sm text-slate-700">
                     {(user?.displayName || user?.email || '?').slice(0, 1).toUpperCase()}
                   </span>
                 )}
@@ -78,7 +80,7 @@ export default function Shell() {
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 z-30 mt-2 w-60 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
+                <div className="absolute right-0 z-30 mt-2 w-60 overflow-hidden rounded-none border border-slate-200 bg-white shadow-lg">
                   <div className="truncate border-b border-slate-100 px-3 py-2 text-xs text-slate-500">
                     {user?.displayName || user?.email}
                   </div>
@@ -90,7 +92,7 @@ export default function Shell() {
                       onChange={(e) => {
                         if (user) saveUiLang(user.uid, e.target.value);
                       }}
-                      className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700"
+                      className="rounded-none border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700"
                     >
                       {UI_LANGS.map((l) => (
                         <option key={l.code} value={l.code}>

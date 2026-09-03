@@ -18,8 +18,8 @@ import Review from './screens/Review';
 
 function Frame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-full w-full justify-center bg-slate-500">
-      <div className="relative h-full w-full max-w-[480px] overflow-hidden bg-slate-100 shadow-2xl">
+    <div className="flex h-full w-full justify-center bg-slate-200">
+      <div className="relative h-full w-full max-w-[480px] overflow-hidden bg-slate-50 ring-1 ring-slate-200">
         {children}
       </div>
     </div>

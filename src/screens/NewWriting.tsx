@@ -175,7 +175,7 @@ export default function NewWriting() {
       <button
         onClick={start}
         disabled={!canStart || busy}
-        className="rounded-full bg-slate-800 px-6 py-3 font-medium text-white shadow-lg transition active:scale-95 hover:bg-slate-700 disabled:opacity-50"
+        className="rounded-none bg-slate-800 px-6 py-3 font-medium text-white shadow-lg transition active:scale-95 hover:bg-slate-700 disabled:opacity-50"
       >
         {busy ? t('new.creating') : t('new.start')}
       </button>

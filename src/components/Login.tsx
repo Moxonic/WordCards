@@ -21,18 +21,19 @@ export default function Login() {
   const t = useT();
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-6 bg-gradient-to-b from-white to-slate-200 px-8 py-10 text-center">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-800">Emenda</h1>
-        <p className="mt-1 text-sm text-slate-500">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-9 bg-slate-50 px-9 py-12 text-center">
+      <div className="flex flex-col items-center gap-3">
+        <h1 className="text-2xl font-medium uppercase tracking-[0.32em] text-slate-800">Emenda</h1>
+        <span className="h-px w-10 bg-slate-300" />
+        <p className="max-w-xs text-sm leading-relaxed text-slate-500">
           Practise writing in a new language and learn from every mistake.
         </p>
       </div>
 
-      <ol className="flex max-w-xs flex-col gap-3 text-left text-sm text-slate-600">
+      <ol className="flex max-w-xs flex-col gap-4 text-left text-sm leading-relaxed text-slate-600">
         {STEPS.map(([name, rest], i) => (
           <li key={name} className="flex gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-semibold text-white">
+            <span className="mt-px flex h-5 w-5 shrink-0 items-center justify-center border border-slate-300 text-[11px] font-medium text-slate-500">
               {i + 1}
             </span>
             <span>
@@ -46,7 +47,7 @@ export default function Login() {
         onClick={signInWithGoogle}
         disabled={!configured}
         title={t('login.googleTitle')}
-        className="mt-1 flex items-center gap-3 rounded-full bg-white px-6 py-3 font-medium text-slate-800 shadow-lg ring-1 ring-slate-200 transition active:scale-95 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex items-center gap-3 rounded-none border border-slate-300 bg-white px-6 py-3 font-medium text-slate-800 shadow-sm transition active:scale-[0.98] hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <FcGoogle className="h-5 w-5" />
         {t('login.google')}

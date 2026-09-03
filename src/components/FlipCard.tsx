@@ -8,14 +8,16 @@ function hueFromSeed(seed = ''): number {
   return h;
 }
 
+// Muted, paper-like faces: the same seed still gives each card its own quiet
+// hue, but at low chroma so the deck reads calm rather than candy-coloured.
 export function cardFaces(seed: string) {
   const hue = hueFromSeed(String(seed || ''));
-  const backHue = (hue + 14) % 360;
+  const backHue = (hue + 12) % 360;
   return {
-    frontColor: `hsl(${hue}, 68%, 76%)`,
-    frontImage: `linear-gradient(160deg, hsl(${hue}, 80%, 84%), hsl(${hue}, 62%, 66%))`,
-    backColor: `hsl(${backHue}, 58%, 64%)`,
-    backImage: `linear-gradient(160deg, hsl(${backHue}, 64%, 72%), hsl(${backHue}, 50%, 52%))`,
+    frontColor: `hsl(${hue}, 20%, 92%)`,
+    frontImage: `linear-gradient(180deg, hsl(${hue}, 22%, 94%), hsl(${hue}, 20%, 89%))`,
+    backColor: `hsl(${backHue}, 18%, 86%)`,
+    backImage: `linear-gradient(180deg, hsl(${backHue}, 20%, 88%), hsl(${backHue}, 17%, 82%))`,
   };
 }
 
@@ -29,7 +31,7 @@ interface Props {
 }
 
 const faceClass =
-  'appearance-none border-0 h-full w-full rounded-[1.75rem] shadow-2xl ring-1 ring-black/10 ' +
+  'appearance-none border-0 h-full w-full rounded-[3px] shadow-sm ring-1 ring-slate-300/60 ' +
   'flex flex-col items-center justify-center gap-2 text-center overflow-hidden relative isolate p-8';
 
 export default function FlipCard({
@@ -48,7 +50,7 @@ export default function FlipCard({
   const flip = () => (controlled ? onFlip?.() : setSelfFlipped((v) => !v));
 
   return (
-    <div className="m-auto h-full w-full select-none rounded-[1.75rem]">
+    <div className="m-auto h-full w-full select-none rounded-[3px]">
       <ReactCardFlip
         isFlipped={isFlipped}
         flipDirection="horizontal"

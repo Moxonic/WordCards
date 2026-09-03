@@ -106,6 +106,8 @@ const es: Partial<Record<MsgKey, string>> = {
   'texts.keepWriting': 'Seguir escribiendo',
   'texts.follow': 'Seguir',
   'texts.tryAgain': 'Intentar de nuevo',
+  'texts.delete': 'Eliminar',
+  'texts.deleteConfirm': '¿Eliminar este texto?',
 
   'review.noMistakes': 'No hay errores que repasar para este texto.',
   'review.backToTexts': 'Volver a los textos',

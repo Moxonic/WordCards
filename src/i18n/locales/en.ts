@@ -106,6 +106,8 @@ const en: Record<MsgKey, string> = {
   'texts.keepWriting': 'Keep writing',
   'texts.follow': 'Follow along',
   'texts.tryAgain': 'Try again',
+  'texts.delete': 'Delete',
+  'texts.deleteConfirm': 'Delete this text?',
 
   'review.noMistakes': 'No mistakes to review for this text.',
   'review.backToTexts': 'Back to the texts',

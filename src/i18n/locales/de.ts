@@ -107,6 +107,8 @@ const de: Partial<Record<MsgKey, string>> = {
   'texts.keepWriting': 'Weiterschreiben',
   'texts.follow': 'Verfolgen',
   'texts.tryAgain': 'Erneut versuchen',
+  'texts.delete': 'Löschen',
+  'texts.deleteConfirm': 'Diesen Text löschen?',
 
   'review.noMistakes': 'Keine Fehler zum Wiederholen für diesen Text.',
   'review.backToTexts': 'Zurück zu den Texten',

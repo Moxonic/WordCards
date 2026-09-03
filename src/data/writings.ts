@@ -6,7 +6,10 @@ import {
   onSnapshot,
   query,
   orderBy,
+  where,
   getDoc,
+  getDocs,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import type { Writing } from '../types';
@@ -16,6 +19,9 @@ function writingsCol(uid: string) {
 }
 function writingRef(uid: string, id: string) {
   return doc(db, 'users', uid, 'writings', id);
+}
+function mistakesCol(uid: string) {
+  return collection(db, 'users', uid, 'mistakes');
 }
 
 export interface NewWritingInput {
@@ -157,6 +163,15 @@ export async function markWritingError(uid: string, id: string, message: string)
     errorMessage: message,
     updatedAt: Date.now(),
   });
+}
+
+/** Delete a writing and every flashcard that was generated from it. */
+export async function deleteWriting(uid: string, id: string): Promise<void> {
+  const cards = await getDocs(query(mistakesCol(uid), where('writingId', '==', id)));
+  const batch = writeBatch(db);
+  cards.forEach((d) => batch.delete(d.ref));
+  batch.delete(writingRef(uid, id));
+  await batch.commit();
 }
 
 /** Re-run grading on a text that's stuck or errored. */

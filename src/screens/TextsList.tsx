@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FiTrash2 } from 'react-icons/fi';
 import { useAuth } from '../auth/AuthContext';
 import { useI18n, type MsgKey } from '../i18n';
-import { subscribeWritings } from '../data/writings';
+import { subscribeWritings, deleteWriting } from '../data/writings';
 import type { Writing } from '../types';
 import Spinner from '../components/Spinner';
 
@@ -33,6 +34,8 @@ export default function TextsList() {
   const { lang, t, tp } = useI18n();
   const nav = useNavigate();
   const [writings, setWritings] = useState<Writing[] | null>(null);
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -42,6 +45,20 @@ export default function TextsList() {
   function statusLabel(w: Writing): string {
     if (w.status === 'graded') return w.grade?.cefr ?? t('texts.status.graded');
     return t(STATUS_KEY[w.status]);
+  }
+
+  async function onDelete(id: string) {
+    if (!user) return;
+    setDeletingId(id);
+    try {
+      await deleteWriting(user.uid, id);
+      // The onSnapshot listener drops the row once it's gone.
+    } catch (e) {
+      console.error('[skrivetrening] deleteWriting failed', e);
+    } finally {
+      setDeletingId(null);
+      setConfirmId(null);
+    }
   }
 
   if (writings === null) return <Spinner label={t('common.loading')} />;
@@ -74,47 +91,75 @@ export default function TextsList() {
                 {w.attemptOf ? ` · ${t('texts.newAttempt')}` : ''}
               </p>
             </div>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2 text-xs">
-            {w.status === 'graded' && (
-              <Link
-                to={`/results/${w.id}`}
-                className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
-              >
-                {t('texts.seeFeedback')}
-              </Link>
-            )}
-            {w.status === 'graded' && w.mistakeCount > 0 && (
-              <Link
-                to={`/review/${w.id}`}
-                className="rounded-full bg-slate-800 px-3 py-1 text-white hover:bg-slate-700"
-              >
-                {t('texts.reviewMistakes')}
-              </Link>
-            )}
-            {(w.status === 'draft' || w.status === 'error') && (
-              <Link
-                to={`/write/${w.id}`}
-                className="rounded-full bg-slate-800 px-3 py-1 text-white hover:bg-slate-700"
-              >
-                {t('texts.keepWriting')}
-              </Link>
-            )}
-            {w.status === 'grading' && (
-              <Link
-                to={`/results/${w.id}`}
-                className="rounded-full bg-slate-100 px-3 py-1 text-slate-600"
-              >
-                {t('texts.follow')}
-              </Link>
-            )}
             <button
-              onClick={() => nav(`/new?attemptOf=${w.id}`)}
-              className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
+              onClick={() => setConfirmId((id) => (id === w.id ? null : w.id))}
+              title={t('texts.delete')}
+              aria-label={t('texts.delete')}
+              className="shrink-0 rounded-full p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
             >
-              {t('texts.tryAgain')}
+              <FiTrash2 className="h-4 w-4" />
             </button>
           </div>
+
+          {confirmId === w.id ? (
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+              <span className="text-slate-600">{t('texts.deleteConfirm')}</span>
+              <button
+                onClick={() => onDelete(w.id)}
+                disabled={deletingId === w.id}
+                className="rounded-full bg-red-600 px-3 py-1 text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deletingId === w.id ? t('common.sending') : t('texts.delete')}
+              </button>
+              <button
+                onClick={() => setConfirmId(null)}
+                className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
+              >
+                {t('common.cancel')}
+              </button>
+            </div>
+          ) : (
+            <div className="mt-2 flex flex-wrap gap-2 text-xs">
+              {w.status === 'graded' && (
+                <Link
+                  to={`/results/${w.id}`}
+                  className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
+                >
+                  {t('texts.seeFeedback')}
+                </Link>
+              )}
+              {w.status === 'graded' && w.mistakeCount > 0 && (
+                <Link
+                  to={`/review/${w.id}`}
+                  className="rounded-full bg-slate-800 px-3 py-1 text-white hover:bg-slate-700"
+                >
+                  {t('texts.reviewMistakes')}
+                </Link>
+              )}
+              {(w.status === 'draft' || w.status === 'error') && (
+                <Link
+                  to={`/write/${w.id}`}
+                  className="rounded-full bg-slate-800 px-3 py-1 text-white hover:bg-slate-700"
+                >
+                  {t('texts.keepWriting')}
+                </Link>
+              )}
+              {w.status === 'grading' && (
+                <Link
+                  to={`/results/${w.id}`}
+                  className="rounded-full bg-slate-100 px-3 py-1 text-slate-600"
+                >
+                  {t('texts.follow')}
+                </Link>
+              )}
+              <button
+                onClick={() => nav(`/new?attemptOf=${w.id}`)}
+                className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 hover:bg-slate-200"
+              >
+                {t('texts.tryAgain')}
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </div>

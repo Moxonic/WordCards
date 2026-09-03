@@ -108,6 +108,8 @@ const nb = {
   'texts.keepWriting': 'Fortsett å skrive',
   'texts.follow': 'Følg med',
   'texts.tryAgain': 'Prøv på nytt',
+  'texts.delete': 'Slett',
+  'texts.deleteConfirm': 'Slette denne teksten?',
 
   'review.noMistakes': 'Ingen feil å repetere for denne teksten.',
   'review.backToTexts': 'Tilbake til tekstene',

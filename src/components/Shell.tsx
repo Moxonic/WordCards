@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n';
 import { UI_LANGS } from '../i18n/config';
 import { saveUiLang } from '../data/prefs';
+import Wordmark from './Wordmark';
 
 export default function Shell() {
   const { user, signOutUser } = useAuth();
@@ -44,9 +45,7 @@ export default function Shell() {
                 <FiChevronLeft className="h-5 w-5" />
               </button>
             ) : (
-              <span className="px-1 text-sm font-medium uppercase tracking-[0.28em] text-slate-700">
-                Emenda
-              </span>
+              <Wordmark className="px-1 text-sm font-medium uppercase tracking-[0.28em] text-slate-700" />
             )}
           </div>
 

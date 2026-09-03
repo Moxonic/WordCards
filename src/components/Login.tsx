@@ -1,6 +1,7 @@
 import { FcGoogle } from 'react-icons/fc';
 import { useAuth } from '../auth/AuthContext';
 import { useT } from '../i18n';
+import Wordmark from './Wordmark';
 
 // The concept pitch is intentionally always in English, whatever the browser
 // language — it's the one place a first-time visitor meets the app.
@@ -23,7 +24,7 @@ export default function Login() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-9 bg-slate-50 px-9 py-12 text-center">
       <div className="flex flex-col items-center gap-3">
-        <h1 className="text-2xl font-medium uppercase tracking-[0.32em] text-slate-800">Emenda</h1>
+        <Wordmark className="text-2xl font-medium uppercase tracking-[0.32em] text-slate-800" />
         <span className="h-px w-10 bg-slate-300" />
         <p className="max-w-xs text-sm leading-relaxed text-slate-500">
           Practise writing in a new language and learn from every mistake.

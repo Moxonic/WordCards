@@ -68,11 +68,11 @@ export default function Shell() {
                   <img
                     src={user.photoURL}
                     alt=""
-                    className="h-8 w-8 rounded-none grayscale"
+                    className="h-8 w-8 rounded-full"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <span className="flex h-8 w-8 items-center justify-center rounded-none bg-slate-300 text-sm text-slate-700">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-300 text-sm text-slate-700">
                     {(user?.displayName || user?.email || '?').slice(0, 1).toUpperCase()}
                   </span>
                 )}

@@ -28,14 +28,6 @@ export default function NewWriting() {
     [promptChoice],
   );
 
-  // The built-in practice tasks are Norwegian Norskprøve prompts. For any other
-  // writing language, only "write your own task" makes sense.
-  const presetsAllowed = targetLang === 'nb';
-  useEffect(() => {
-    if (!presetsAllowed && promptChoice !== OWN) setPromptChoice(OWN);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [presetsAllowed]);
-
   // Prefill from the task being re-attempted (blank editor, same setup).
   useEffect(() => {
     if (!attemptOf || !user) return;
@@ -128,44 +120,39 @@ export default function NewWriting() {
         />
       </label>
 
-      {presetsAllowed && (
-        <label className="flex flex-col gap-1 text-sm text-slate-600">
-          {t('new.task')}
-          <select
-            value={promptChoice}
-            onChange={(e) => setPromptChoice(e.target.value)}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-2"
-          >
-            <optgroup label={t('new.taskEmail')}>
-              {PROMPTS.filter((p) => p.kind === 'epost').map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.title}
-                </option>
-              ))}
-            </optgroup>
-            <optgroup label={t('new.taskEssay')}>
-              {PROMPTS.filter((p) => p.kind === 'drofting').map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.title}
-                </option>
-              ))}
-            </optgroup>
-            <option value={OWN}>{t('new.ownTask')}</option>
-          </select>
-        </label>
-      )}
+      <label className="flex flex-col gap-1 text-sm text-slate-600">
+        {t('new.task')}
+        <select
+          value={promptChoice}
+          onChange={(e) => setPromptChoice(e.target.value)}
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2"
+        >
+          <optgroup label={t('new.taskEmail')}>
+            {PROMPTS.filter((p) => p.kind === 'epost').map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.title}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label={t('new.taskEssay')}>
+            {PROMPTS.filter((p) => p.kind === 'drofting').map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.title}
+              </option>
+            ))}
+          </optgroup>
+          <option value={OWN}>{t('new.ownTask')}</option>
+        </select>
+      </label>
 
       {promptChoice === OWN ? (
-        <label className="flex flex-col gap-1 text-sm text-slate-600">
-          {!presetsAllowed && t('new.task')}
-          <textarea
-            value={ownPrompt}
-            onChange={(e) => setOwnPrompt(e.target.value)}
-            placeholder={t('new.ownTaskPlaceholder')}
-            rows={3}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
-          />
-        </label>
+        <textarea
+          value={ownPrompt}
+          onChange={(e) => setOwnPrompt(e.target.value)}
+          placeholder={t('new.ownTaskPlaceholder')}
+          rows={3}
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+        />
       ) : (
         <div className="rounded-lg bg-white p-3 text-sm text-slate-600 ring-1 ring-slate-200">
           <p>{selectedPrompt?.no}</p>

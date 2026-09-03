@@ -231,44 +231,52 @@ export default async (req: Request): Promise<Response> => {
       return new Response('rate limited', { status: 429 });
     }
 
+    // The learner's menu language decides which language the teacher feedback is
+    // written in. The corrected text stays in the target language; the mistake
+    // cards stay in the per-text mother tongue.
+    const prefs = (await fsGet(token, `users/${uid}/meta/prefs`)) as { uiLang?: string } | null;
+    const feedbackName = langName(String(prefs?.uiLang || w.targetLang || 'nb'));
+
     const targetName = langName(String(w.targetLang || 'nb'));
     const motherName = langName(String(w.motherLang || 'en'));
-    const promptText = String(w.promptText || '(ingen oppgavetekst)');
+    const promptText = String(w.promptText || '(no task text)');
     const text = String(w.text || '');
 
     const system =
-      'Du er en erfaren sensor for Norskprøven og en språklærer. Du vurderer en tekst ' +
-      'skrevet av en kandidat som øver til nivå B2. Vær vennlig, konkret og oppmuntrende, ' +
-      'slik en god lærer er. Svar KUN med gyldig JSON – ingen tekst utenfor JSON-objektet.';
+      'You are an experienced examiner for the Norwegian language test (Norskprøven) and a ' +
+      'language teacher. You are assessing a text written by a candidate practising for level ' +
+      'B2. Be kind, concrete and encouraging, like a good teacher. Reply ONLY with valid JSON – ' +
+      'no text outside the JSON object.';
 
     const userMsg =
-      `Skrivespråk: ${targetName}\n` +
-      `Kandidatens morsmål: ${motherName}\n\n` +
-      `Oppgave:\n${promptText}\n\n` +
-      `Kandidatens tekst:\n"""\n${text}\n"""\n\n` +
-      'Gi tilbakemelding som JSON med nøyaktig denne strukturen:\n' +
+      `Writing language: ${targetName}\n` +
+      `Candidate's mother tongue: ${motherName}\n` +
+      `Language for your feedback: ${feedbackName}\n\n` +
+      `Task:\n${promptText}\n\n` +
+      `Candidate's text:\n"""\n${text}\n"""\n\n` +
+      'Return feedback as JSON with exactly this structure:\n' +
       `{
-  "cefr": "kort nivåestimat, f.eks. \\"B2\\", \\"Rett under B2\\", \\"B1\\"",
+  "cefr": "short level estimate, e.g. \\"B2\\", \\"Just below B2\\", \\"B1\\" (write it in ${feedbackName})",
   "categories": {
-    "content": "én kort norsk setning om innhold og oppgavesvar",
-    "grammar": "én kort norsk setning om grammatikk",
-    "vocabulary": "én kort norsk setning om ordforråd",
-    "spelling": "én kort norsk setning om rettskriving og tegnsetting"
+    "content": "one short sentence in ${feedbackName} about content and how well the task is answered",
+    "grammar": "one short sentence in ${feedbackName} about grammar",
+    "vocabulary": "one short sentence in ${feedbackName} about vocabulary",
+    "spelling": "one short sentence in ${feedbackName} about spelling and punctuation"
   },
-  "positives": ["2-4 korte norske punkter om hva kandidaten gjør bra"],
-  "improve": ["2-4 korte norske punkter om hva kandidaten bør se nærmere på"],
-  "correctedText": "hele teksten rettet til korrekt, naturlig norsk. Behold kandidatens innhold og stil.",
+  "positives": ["2-4 short points in ${feedbackName} about what the candidate does well"],
+  "improve": ["2-4 short points in ${feedbackName} about what the candidate should look at"],
+  "correctedText": "the whole text corrected to natural, correct ${targetName}. Keep the candidate's content and style.",
   "mistakes": [
     {
-      "type": "grammar eller spelling",
-      "original": "den korte feilaktige delen slik kandidaten skrev den (noen få ord, ikke hele setninger)",
-      "corrected": "den samme delen rettet til korrekt norsk",
-      "translation": "den RETTEDE delen oversatt til ${motherName}",
-      "note": "kort forklaring paa ${motherName}, maks 8 ord"
+      "type": "grammar or spelling",
+      "original": "the short incorrect fragment as the candidate wrote it (a few words, not whole sentences), in ${targetName}",
+      "corrected": "the same fragment corrected to correct ${targetName}",
+      "translation": "the CORRECTED fragment translated into ${motherName}",
+      "note": "short explanation in ${motherName}, max 8 words"
     }
   ]
 }\n` +
-      `Ikke ta med rene stil-/preferansevalg. Maks ${MAX_MISTAKES} elementer i "mistakes".`;
+      `Do not include pure style/preference choices. Max ${MAX_MISTAKES} items in "mistakes".`;
 
     const msg = await anthropic.messages.create({
       model: GRADE_MODEL,

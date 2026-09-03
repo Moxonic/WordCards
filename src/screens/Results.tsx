@@ -1,21 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { useI18n, type MsgKey } from '../i18n';
 import { subscribeWriting, retryGrading, markWritingError } from '../data/writings';
 import type { Writing } from '../types';
 import Spinner from '../components/Spinner';
 import DiffText from '../components/DiffText';
 
-const CAT_LABELS: Record<string, string> = {
-  content: 'Innhold',
-  grammar: 'Grammatikk',
-  vocabulary: 'Ordforråd',
-  spelling: 'Rettskriving',
+const CAT_KEYS: Record<string, MsgKey> = {
+  content: 'results.cat.content',
+  grammar: 'results.cat.grammar',
+  vocabulary: 'results.cat.vocabulary',
+  spelling: 'results.cat.spelling',
 };
 
 export default function Results() {
   const { id = '' } = useParams();
   const { user } = useAuth();
+  const { t, tp } = useI18n();
   const nav = useNavigate();
   const [writing, setWriting] = useState<Writing | null | undefined>(undefined);
   const [view, setView] = useState<'corrected' | 'yours'>('corrected');
@@ -39,13 +41,13 @@ export default function Results() {
     if (graceStart.current == null) graceStart.current = Date.now();
     const softId = window.setTimeout(() => setSlow(true), 25_000);
     const hardId = window.setTimeout(() => {
-      if (user) markWritingError(user.uid, id, 'Rettingen svarte ikke. Prøv igjen.');
+      if (user) markWritingError(user.uid, id, t('results.watchdogError'));
     }, 120_000);
     return () => {
       window.clearTimeout(softId);
       window.clearTimeout(hardId);
     };
-  }, [writing?.status, user, id]);
+  }, [writing?.status, user, id, t]);
 
   async function doRetry() {
     if (!user) return;
@@ -57,39 +59,39 @@ export default function Results() {
     }
   }
 
-  if (writing === undefined) return <Spinner label="Laster…" />;
+  if (writing === undefined) return <Spinner label={t('common.loading')} />;
   if (writing === null)
-    return <p className="p-6 text-center text-slate-500">Fant ikke teksten.</p>;
+    return <p className="p-6 text-center text-slate-500">{t('common.notFound')}</p>;
 
   if (writing.status === 'grading') {
     return (
       <div className="flex flex-col items-center p-6 text-center">
         <h2 className="mb-1 text-lg font-semibold text-slate-700">{writing.title}</h2>
-        <Spinner label="Læreren leser teksten din… dette tar et halvt minutt." />
+        <Spinner label={t('results.gradingTitle')} />
         {slow && (
           <div className="mt-4 flex flex-col items-center gap-2">
-            <p className="text-sm text-slate-500">Tar det for lang tid?</p>
+            <p className="text-sm text-slate-500">{t('results.tooLong')}</p>
             <div className="flex gap-2">
               <button
                 onClick={doRetry}
                 disabled={retrying}
                 className="rounded-full bg-slate-800 px-4 py-2 text-sm text-white disabled:opacity-50"
               >
-                {retrying ? 'Sender…' : 'Prøv igjen'}
+                {retrying ? t('common.sending') : t('common.retry')}
               </button>
               <button
                 onClick={() =>
-                  user && markWritingError(user.uid, id, 'Avbrutt.').then(() => nav(`/write/${id}`))
+                  user &&
+                  markWritingError(user.uid, id, t('results.cancelled')).then(() =>
+                    nav(`/write/${id}`),
+                  )
                 }
                 className="rounded-full bg-white px-4 py-2 text-sm text-slate-600 ring-1 ring-slate-200"
               >
-                Avbryt
+                {t('common.cancel')}
               </button>
             </div>
-            <p className="mt-1 max-w-xs text-xs text-slate-400">
-              Retteren kjører som en Netlify-funksjon. Start appen med{' '}
-              <code>npm run netlify-dev</code> (port 8888), ikke <code>npm run dev</code>.
-            </p>
+            <p className="mt-1 max-w-xs text-xs text-slate-400">{t('results.devHint')}</p>
           </div>
         )}
       </div>
@@ -99,20 +101,20 @@ export default function Results() {
   if (writing.status === 'error') {
     return (
       <div className="flex flex-col items-center gap-3 p-8 text-center">
-        <p className="text-slate-700">{writing.errorMessage || 'Noe gikk galt under rettingen.'}</p>
+        <p className="text-slate-700">{writing.errorMessage || t('results.genericError')}</p>
         <div className="flex gap-2">
           <button
             onClick={doRetry}
             disabled={retrying}
             className="rounded-full bg-slate-800 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
           >
-            {retrying ? 'Sender…' : 'Prøv igjen'}
+            {retrying ? t('common.sending') : t('common.retry')}
           </button>
           <Link
             to={`/write/${id}`}
             className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200"
           >
-            Tilbake til teksten
+            {t('results.backToText')}
           </Link>
         </div>
       </div>
@@ -122,12 +124,12 @@ export default function Results() {
   if (writing.status === 'draft' || !writing.grade) {
     return (
       <div className="flex flex-col items-center gap-3 p-8 text-center text-slate-500">
-        <p>Denne teksten er ikke sendt til retting ennå.</p>
+        <p>{t('results.notSubmitted')}</p>
         <Link
           to={`/write/${id}`}
           className="rounded-full bg-slate-800 px-5 py-2.5 text-sm font-medium text-white"
         >
-          Åpne i skriveren
+          {t('results.openInEditor')}
         </Link>
       </div>
     );
@@ -139,25 +141,27 @@ export default function Results() {
     <div className="mx-auto flex max-w-md flex-col gap-4 p-5">
       <div>
         <h2 className="text-lg font-semibold text-slate-700">{writing.title}</h2>
-        <p className="text-xs text-slate-400">Vurdert av AI-lærer</p>
+        <p className="text-xs text-slate-400">{t('results.subtitle')}</p>
       </div>
 
       <div className="rounded-2xl bg-slate-800 p-5 text-center text-white shadow-lg">
-        <p className="text-xs uppercase tracking-widest text-slate-400">Estimert nivå</p>
+        <p className="text-xs uppercase tracking-widest text-slate-400">
+          {t('results.estimatedLevel')}
+        </p>
         <p className="text-3xl font-bold">{g.cefr}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-2">
-        {(Object.keys(CAT_LABELS) as (keyof typeof g.categories)[]).map((k) => (
+        {(Object.keys(CAT_KEYS) as (keyof typeof g.categories)[]).map((k) => (
           <div key={k} className="rounded-xl bg-white p-3 text-sm ring-1 ring-slate-200">
-            <span className="font-semibold text-slate-700">{CAT_LABELS[k]}: </span>
+            <span className="font-semibold text-slate-700">{t(CAT_KEYS[k])}: </span>
             <span className="text-slate-600">{g.categories[k]}</span>
           </div>
         ))}
       </div>
 
       <div className="rounded-xl bg-emerald-50 p-3 ring-1 ring-emerald-200">
-        <p className="mb-1 text-sm font-semibold text-emerald-800">Dette gjorde du bra</p>
+        <p className="mb-1 text-sm font-semibold text-emerald-800">{t('results.didWell')}</p>
         <ul className="list-disc pl-5 text-sm text-emerald-900">
           {g.positives.map((p, i) => (
             <li key={i}>{p}</li>
@@ -166,7 +170,7 @@ export default function Results() {
       </div>
 
       <div className="rounded-xl bg-amber-50 p-3 ring-1 ring-amber-200">
-        <p className="mb-1 text-sm font-semibold text-amber-800">Sjekk dette</p>
+        <p className="mb-1 text-sm font-semibold text-amber-800">{t('results.checkThis')}</p>
         <ul className="list-disc pl-5 text-sm text-amber-900">
           {g.improve.map((p, i) => (
             <li key={i}>{p}</li>
@@ -182,7 +186,7 @@ export default function Results() {
               view === 'corrected' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'
             }`}
           >
-            Rettet
+            {t('results.viewCorrected')}
           </button>
           <button
             onClick={() => setView('yours')}
@@ -190,7 +194,7 @@ export default function Results() {
               view === 'yours' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'
             }`}
           >
-            Din tekst
+            {t('results.viewYours')}
           </button>
         </div>
         {view === 'corrected' ? (
@@ -210,16 +214,16 @@ export default function Results() {
             to={`/review/${id}`}
             className="rounded-full bg-slate-800 px-5 py-3 text-center font-medium text-white shadow-lg active:scale-95 hover:bg-slate-700"
           >
-            Repeter {writing.mistakeCount} feil →
+            {tp('results.reviewN', writing.mistakeCount)}
           </Link>
         ) : (
-          <p className="text-center text-sm text-slate-500">Ingen feil å repetere. Bra jobba!</p>
+          <p className="text-center text-sm text-slate-500">{t('results.noMistakes')}</p>
         )}
         <button
           onClick={() => nav(`/new?attemptOf=${id}`)}
           className="rounded-full bg-white px-5 py-3 text-center font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
         >
-          Prøv oppgaven på nytt
+          {t('results.tryAgain')}
         </button>
       </div>
     </div>

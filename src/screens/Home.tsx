@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiEdit3, FiRefreshCw } from 'react-icons/fi';
 import { useAuth } from '../auth/AuthContext';
+import { useI18n } from '../i18n';
 import { subscribeWritings } from '../data/writings';
 import type { Writing } from '../types';
 
 export default function Home() {
   const { user } = useAuth();
+  const { t, tp } = useI18n();
   const [writings, setWritings] = useState<Writing[] | null>(null);
 
   useEffect(() => {
@@ -19,9 +21,7 @@ export default function Home() {
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 px-6 py-10">
-      <h1 className="mb-2 text-center text-xl font-semibold text-slate-700">
-        Hva vil du gjøre?
-      </h1>
+      <h1 className="mb-2 text-center text-xl font-semibold text-slate-700">{t('home.heading')}</h1>
 
       <Link
         to="/new"
@@ -29,10 +29,8 @@ export default function Home() {
       >
         <FiEdit3 className="h-7 w-7 shrink-0" />
         <span>
-          <span className="block text-lg font-semibold">Skriv ny tekst</span>
-          <span className="block text-sm text-slate-300">
-            E-post eller drøftingstekst, med retting og tilbakemelding
-          </span>
+          <span className="block text-lg font-semibold">{t('home.write.title')}</span>
+          <span className="block text-sm text-slate-300">{t('home.write.sub')}</span>
         </span>
       </Link>
 
@@ -48,11 +46,11 @@ export default function Home() {
       >
         <FiRefreshCw className="h-7 w-7 shrink-0" />
         <span>
-          <span className="block text-lg font-semibold">Repeter en tekst</span>
+          <span className="block text-lg font-semibold">{t('home.review.title')}</span>
           <span className="block text-sm">
             {canReview
-              ? `${reviewable.length} tekst${reviewable.length === 1 ? '' : 'er'} klar til repetisjon`
-              : 'Blir tilgjengelig når du har fått rettet en tekst'}
+              ? tp('home.review.ready', reviewable.length)
+              : t('home.review.locked')}
           </span>
         </span>
       </Link>

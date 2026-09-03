@@ -9,6 +9,8 @@ interface Props {
   onSwipe: (dir: 'left' | 'right') => void;
   onTap?: () => void;
   disabled?: boolean;
+  hintYes?: string;
+  hintNo?: string;
   children: ReactNode;
 }
 
@@ -17,7 +19,14 @@ interface Props {
  * flies it off screen and calls onSwipe. A near-still release calls onTap (the
  * pointer capture would otherwise swallow the click before it reached the card).
  */
-export default function SwipeCard({ onSwipe, onTap, disabled = false, children }: Props) {
+export default function SwipeCard({
+  onSwipe,
+  onTap,
+  disabled = false,
+  hintYes = 'KAN DET',
+  hintNo = 'IGJEN',
+  children,
+}: Props) {
   const [drag, setDrag] = useState({ x: 0, y: 0, active: false });
   const [leaving, setLeaving] = useState<'left' | 'right' | null>(null);
   const [entered, setEntered] = useState(false);
@@ -100,7 +109,7 @@ export default function SwipeCard({ onSwipe, onTap, disabled = false, children }
               : 'left-6 rotate-12 border-red-500 text-red-600'
           }`}
         >
-          {hint === 'yes' ? 'KAN DET' : 'IGJEN'}
+          {hint === 'yes' ? hintYes : hintNo}
         </div>
       )}
     </div>

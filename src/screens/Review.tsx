@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import { useAuth } from '../auth/AuthContext';
+import { useI18n } from '../i18n';
 import { subscribeWriting } from '../data/writings';
 import { subscribeMistakesForWriting, recordReview } from '../data/mistakes';
 import { isDue } from '../lib/leitner';
@@ -28,6 +29,7 @@ function byDue(a: Mistake, b: Mistake) {
 export default function Review() {
   const { writingId = '' } = useParams();
   const { user } = useAuth();
+  const { t } = useI18n();
 
   const [writing, setWriting] = useState<Writing | null>(null);
   const [mistakes, setMistakes] = useState<Mistake[] | null>(null);
@@ -101,14 +103,14 @@ export default function Review() {
     setFlip({ id: curId, on: true });
   }
 
-  if (!mistakes || writing === null) return <Spinner label="Laster…" />;
+  if (!mistakes || writing === null) return <Spinner label={t('common.loading')} />;
 
   if (mistakes.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 p-10 text-center text-slate-500">
-        <p>Ingen feil å repetere for denne teksten.</p>
+        <p>{t('review.noMistakes')}</p>
         <Link to="/texts" className="text-sm text-slate-600 underline">
-          Tilbake til tekstene
+          {t('review.backToTexts')}
         </Link>
       </div>
     );
@@ -119,22 +121,22 @@ export default function Review() {
       <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
         <p className="text-4xl">🎉</p>
         <p className="text-lg font-medium text-slate-700">
-          Du kan alle {session.total} nå.
+          {t('review.allKnown', { n: session.total })}
         </p>
         <button
           onClick={() => build(true)}
           className="mt-2 rounded-full bg-slate-800 px-6 py-2.5 font-medium text-white shadow-lg hover:bg-slate-700"
         >
-          Gå gjennom igjen
+          {t('review.goAgain')}
         </button>
         <Link to="/texts" className="text-sm text-slate-500 underline">
-          Ferdig
+          {t('common.done')}
         </Link>
       </div>
     );
   }
 
-  if (!session || !curId || !cur) return <Spinner label="Laster…" />;
+  if (!session || !curId || !cur) return <Spinner label={t('common.loading')} />;
 
   // Smooth progress: mastered = 1, others count got/needed.
   let partial = 0;
@@ -162,7 +164,7 @@ export default function Review() {
   return (
     <div className="flex h-full w-full select-none flex-col bg-slate-100 px-5 pb-5 pt-3">
       <div className="mb-1 flex items-center justify-between text-[11px] font-medium text-slate-400">
-        <span>kan {session.masteredCount}/{session.total}</span>
+        <span>{t('review.knownCount', { n: session.masteredCount, total: session.total })}</span>
         <span>{Math.round(progress * 100)}%</span>
       </div>
       <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
@@ -177,7 +179,7 @@ export default function Review() {
           onClick={() => setMode('flip')}
           className={`rounded-full px-3 py-1 ${mode === 'flip' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}
         >
-          Snu
+          {t('review.modeFlip')}
         </button>
         <button
           onClick={() => {
@@ -188,7 +190,7 @@ export default function Review() {
           }}
           className={`rounded-full px-3 py-1 ${mode === 'write' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}
         >
-          Skriv
+          {t('review.modeWrite')}
         </button>
       </div>
 
@@ -201,6 +203,7 @@ export default function Review() {
                 front={<span className="text-[1.4rem] font-semibold text-slate-800">{behind.translation}</span>}
                 back={<span />}
                 flipped={false}
+                flipHint={t('flip.hint')}
               />
             </div>
           )}
@@ -209,8 +212,16 @@ export default function Review() {
               key={curId}
               onSwipe={(d) => handleAnswer(d === 'right')}
               onTap={() => setFlip((f) => ({ id: curId, on: !(f.id === curId && f.on) }))}
+              hintYes={t('swipe.hintYes')}
+              hintNo={t('swipe.hintNo')}
             >
-              <FlipCard seed={curId} front={frontNode} back={backNode} flipped={topFlipped} />
+              <FlipCard
+                seed={curId}
+                front={frontNode}
+                back={backNode}
+                flipped={topFlipped}
+                flipHint={t('flip.hint')}
+              />
             </SwipeCard>
           </div>
         </div>
@@ -222,7 +233,7 @@ export default function Review() {
             value={typed}
             onChange={(e) => setTyped(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && checkTyped()}
-            placeholder="Skriv den riktige norske setningen…"
+            placeholder={t('review.writePlaceholder')}
             className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
             autoFocus
           />
@@ -232,12 +243,12 @@ export default function Review() {
               disabled={!typed.trim()}
               className="self-center rounded-full bg-slate-800 px-5 py-1.5 text-sm text-white disabled:opacity-50"
             >
-              Sjekk
+              {t('review.check')}
             </button>
           ) : (
             <p className="text-center text-sm">
               {checked ? (
-                <span className="text-emerald-600">✓ Riktig!</span>
+                <span className="text-emerald-600">{t('review.correct')}</span>
               ) : (
                 <span className="text-red-600">
                   ✗ <DiffText from={typed} to={cur.corrected} />
@@ -251,16 +262,16 @@ export default function Review() {
       <div className="mt-3 flex items-center justify-center gap-14">
         <button
           onClick={() => handleAnswer(false)}
-          aria-label="Kunne ikke"
-          title="Kunne ikke – kommer igjen senere i runden"
+          aria-label={t('review.cantDo')}
+          title={t('review.cantDoTitle')}
           className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-slate-200 transition active:scale-95 hover:ring-red-300"
         >
           <AiOutlineClose className="h-6 w-6 text-red-500" />
         </button>
         <button
           onClick={() => handleAnswer(true)}
-          aria-label="Kunne det"
-          title="Kunne det – teller mot å mestre kortet"
+          aria-label={t('review.canDo')}
+          title={t('review.canDoTitle')}
           className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-slate-200 transition active:scale-95 hover:ring-emerald-300"
         >
           <AiOutlineCheck className="h-6 w-6 text-emerald-500" />
@@ -268,8 +279,8 @@ export default function Review() {
       </div>
 
       <p className="mt-3 text-center text-[11px] text-slate-400">
-        {st && st.needed > 1 ? `Denne trenger ${st.needed} riktige · ${st.got} så langt · ` : ''}
-        trykk for å snu · dra til høyre om du kan det
+        {st && st.needed > 1 ? t('review.needsN', { n: st.needed, got: st.got }) : ''}
+        {t('review.hint')}
       </p>
     </div>
   );

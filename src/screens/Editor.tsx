@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { useT } from '../i18n';
 import { subscribeWriting, saveDraft, submitForGrading } from '../data/writings';
 import { getPrompt } from '../content/prompts';
 import type { Writing } from '../types';
@@ -16,6 +17,7 @@ function countWords(s: string): number {
 export default function Editor() {
   const { id = '' } = useParams();
   const { user } = useAuth();
+  const t = useT();
   const nav = useNavigate();
 
   const [writing, setWriting] = useState<Writing | null | undefined>(undefined);
@@ -70,9 +72,9 @@ export default function Editor() {
     }
   }
 
-  if (writing === undefined) return <Spinner label="Laster…" />;
+  if (writing === undefined) return <Spinner label={t('common.loading')} />;
   if (writing === null)
-    return <p className="p-6 text-center text-slate-500">Fant ikke teksten.</p>;
+    return <p className="p-6 text-center text-slate-500">{t('common.notFound')}</p>;
 
   const prompt = getPrompt(writing.promptId);
   const words = countWords(text);
@@ -88,37 +90,35 @@ export default function Editor() {
             onClick={() => setShowPrompt((v) => !v)}
             className="shrink-0 text-xs text-slate-500 underline"
           >
-            {showPrompt ? 'skjul oppgave' : 'vis oppgave'}
+            {showPrompt ? t('editor.hideTask') : t('editor.showTask')}
           </button>
         </div>
         {showPrompt && (
-          <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">
-            {writing.promptText}
-          </p>
+          <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">{writing.promptText}</p>
         )}
       </div>
 
       <textarea
         value={text}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Skriv teksten din her…"
+        placeholder={t('editor.placeholder')}
         className="min-h-0 flex-1 resize-none bg-white p-4 text-[15px] leading-relaxed text-slate-800 outline-none"
         autoFocus
       />
 
       <div className="flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-3">
         <span className="text-xs text-slate-400">
-          {words} ord
-          {range ? ` · mål ${range[0]}–${range[1]}` : ''}
-          {saved === 'saved' ? ' · lagret' : saved === 'saving' ? ' · lagrer…' : ''}
+          {t('editor.words', { n: words })}
+          {range ? t('editor.goal', { min: range[0], max: range[1] }) : ''}
+          {saved === 'saved' ? t('editor.saved') : saved === 'saving' ? t('editor.saving') : ''}
         </span>
         <button
           onClick={submit}
           disabled={!enough || submitting}
-          title={enough ? 'Send teksten til retting' : 'Skriv litt mer først'}
+          title={enough ? t('editor.submitTitleOk') : t('editor.submitTitleNo')}
           className="rounded-full bg-slate-800 px-5 py-2.5 text-sm font-medium text-white shadow transition active:scale-95 hover:bg-slate-700 disabled:opacity-50"
         >
-          {submitting ? 'Sender…' : 'Få tilbakemelding'}
+          {submitting ? t('common.sending') : t('editor.submit')}
         </button>
       </div>
     </div>

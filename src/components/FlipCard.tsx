@@ -25,13 +25,21 @@ interface Props {
   back: ReactNode;
   flipped?: boolean;
   onFlip?: () => void;
+  flipHint?: string;
 }
 
 const faceClass =
   'appearance-none border-0 h-full w-full rounded-[1.75rem] shadow-2xl ring-1 ring-black/10 ' +
   'flex flex-col items-center justify-center gap-2 text-center overflow-hidden relative isolate p-8';
 
-export default function FlipCard({ seed, front, back, flipped, onFlip }: Props) {
+export default function FlipCard({
+  seed,
+  front,
+  back,
+  flipped,
+  onFlip,
+  flipHint = 'Snu kortet',
+}: Props) {
   const faces = cardFaces(seed);
   const controlled = flipped !== undefined;
   const [selfFlipped, setSelfFlipped] = useState(false);
@@ -51,7 +59,7 @@ export default function FlipCard({ seed, front, back, flipped, onFlip }: Props) 
           className={faceClass}
           style={{ backgroundColor: faces.frontColor, backgroundImage: faces.frontImage }}
           onClick={flip}
-          title="Snu kortet"
+          title={flipHint}
         >
           {front}
         </button>
@@ -61,7 +69,7 @@ export default function FlipCard({ seed, front, back, flipped, onFlip }: Props) 
           className={faceClass}
           style={{ backgroundColor: faces.backColor, backgroundImage: faces.backImage }}
           onClick={flip}
-          title="Snu kortet"
+          title={flipHint}
         >
           {back}
         </button>

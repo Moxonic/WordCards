@@ -2,9 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { FiLogOut, FiChevronLeft } from 'react-icons/fi';
 import { useAuth } from '../auth/AuthContext';
+import { useI18n } from '../i18n';
+import { UI_LANGS } from '../i18n/config';
+import { saveUiLang } from '../data/prefs';
 
 export default function Shell() {
   const { user, signOutUser } = useAuth();
+  const { lang, t } = useI18n();
   const nav = useNavigate();
   const loc = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -34,7 +38,7 @@ export default function Shell() {
             {!atHome ? (
               <button
                 onClick={() => nav(-1)}
-                title="Tilbake"
+                title={t('common.back')}
                 className="rounded-full p-1.5 text-slate-500 hover:bg-slate-100"
               >
                 <FiChevronLeft className="h-5 w-5" />
@@ -49,13 +53,13 @@ export default function Shell() {
               to="/texts"
               className="rounded-full px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100"
             >
-              Mine tekster
+              {t('shell.myTexts')}
             </Link>
 
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen((v) => !v)}
-                title="Konto"
+                title={t('common.account')}
                 className="flex items-center gap-1 rounded-full pr-1 hover:bg-slate-100"
               >
                 {user?.photoURL ? (
@@ -74,16 +78,34 @@ export default function Shell() {
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 z-30 mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
+                <div className="absolute right-0 z-30 mt-2 w-60 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
                   <div className="truncate border-b border-slate-100 px-3 py-2 text-xs text-slate-500">
                     {user?.displayName || user?.email}
                   </div>
+
+                  <label className="flex flex-col gap-1 border-b border-slate-100 px-3 py-2 text-xs text-slate-500">
+                    {t('shell.language')}
+                    <select
+                      value={lang}
+                      onChange={(e) => {
+                        if (user) saveUiLang(user.uid, e.target.value);
+                      }}
+                      className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700"
+                    >
+                      {UI_LANGS.map((l) => (
+                        <option key={l.code} value={l.code}>
+                          {l.native}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
                   <button
                     onClick={signOutUser}
                     className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-slate-50"
                   >
                     <FiLogOut className="h-4 w-4" />
-                    Logg ut
+                    {t('shell.signOut')}
                   </button>
                 </div>
               )}

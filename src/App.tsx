@@ -1,7 +1,13 @@
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext';
+import { I18nProvider } from './i18n';
+import { guessUiLang } from './i18n/config';
+import { translate } from './i18n/messages';
+import { subscribePrefs, saveUiLang, type Prefs } from './data/prefs';
 import Shell from './components/Shell';
 import Login from './components/Login';
+import LangGate from './components/LangGate';
 import Spinner from './components/Spinner';
 import Home from './screens/Home';
 import NewWriting from './screens/NewWriting';
@@ -22,38 +28,79 @@ function Frame({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const { user, loading } = useAuth();
+  const [guessed] = useState(guessUiLang);
+  const [prefs, setPrefs] = useState<Prefs | undefined>(undefined);
+  const [savingLang, setSavingLang] = useState(false);
 
-  if (loading) {
-    return (
+  useEffect(() => {
+    if (!user) {
+      setPrefs(undefined);
+      return;
+    }
+    return subscribePrefs(user.uid, setPrefs);
+  }, [user]);
+
+  const loadingView = (
+    <I18nProvider lang={guessed}>
       <Frame>
         <div className="flex h-full items-center justify-center">
-          <Spinner label="Laster…" />
+          <Spinner label={translate(guessed, 'common.loading')} />
         </div>
       </Frame>
-    );
-  }
+    </I18nProvider>
+  );
+
+  if (loading) return loadingView;
 
   if (!user) {
     return (
-      <Frame>
-        <Login />
-      </Frame>
+      <I18nProvider lang={guessed}>
+        <Frame>
+          <Login />
+        </Frame>
+      </I18nProvider>
+    );
+  }
+
+  if (prefs === undefined) return loadingView;
+
+  // First sign-in: no menu language chosen yet.
+  if (!prefs.uiLang) {
+    return (
+      <I18nProvider lang={guessed}>
+        <Frame>
+          <LangGate
+            guessed={guessed}
+            busy={savingLang}
+            onPick={async (code) => {
+              setSavingLang(true);
+              try {
+                await saveUiLang(user.uid, code);
+              } finally {
+                setSavingLang(false);
+              }
+            }}
+          />
+        </Frame>
+      </I18nProvider>
     );
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<Shell />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/new" element={<NewWriting />} />
-          <Route path="/write/:id" element={<Editor />} />
-          <Route path="/results/:id" element={<Results />} />
-          <Route path="/texts" element={<TextsList />} />
-          <Route path="/review/:writingId" element={<Review />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <I18nProvider lang={prefs.uiLang}>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Shell />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/new" element={<NewWriting />} />
+            <Route path="/write/:id" element={<Editor />} />
+            <Route path="/results/:id" element={<Results />} />
+            <Route path="/texts" element={<TextsList />} />
+            <Route path="/review/:writingId" element={<Review />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </I18nProvider>
   );
 }

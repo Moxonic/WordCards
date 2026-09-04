@@ -39,6 +39,7 @@ export default function Review() {
   const [typed, setTyped] = useState('');
   const [checked, setChecked] = useState<null | boolean>(null);
   const built = useRef(false);
+  const answering = useRef(false);
 
   useEffect(() => {
     if (!user) return;
@@ -80,8 +81,22 @@ export default function Review() {
   const behind = session ? byId.get(peekNextId(session) ?? '') : undefined;
   const topFlipped = flip.id === curId && flip.on;
 
+  // Whenever a different card comes to the front, the guard is clear again.
+  useEffect(() => {
+    answering.current = false;
+  }, [curId]);
+
   async function handleAnswer(known: boolean) {
-    if (!session || !cur) return;
+    // One answer per beat: a swipe and a +/- tap (or the swipe's delayed callback
+    // racing a tap) must not both land, or the mastery counter skips. The guard
+    // also clears the moment the next card appears (effect above), so a genuine
+    // next-card answer is never blocked.
+    if (answering.current || !session || !cur) return;
+    answering.current = true;
+    window.setTimeout(() => {
+      answering.current = false;
+    }, 280);
+
     const { session: next, persist } = answer(session, known);
     setSession(next);
     setFlip({ id: null, on: false });

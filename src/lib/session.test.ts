@@ -66,6 +66,16 @@ describe('session', () => {
     expect(s.states.a.needed).toBe(3);
   });
 
+  it('re-answering an already-mastered card does not double-count', () => {
+    let s = initSession([card('a'), card('b')]);
+    s = answer(s, true).session; // a mastered, removed from queue
+    expect(s.masteredCount).toBe(1);
+    // Force a stale re-answer of 'a' (a delayed swipe callback could do this).
+    const stale = answer({ ...s, queue: ['a', ...s.queue] }, true);
+    expect(stale.persist).toBe(null);
+    expect(stale.session.masteredCount).toBe(1);
+  });
+
   it('dropCard removes a card and shrinks the total', () => {
     let s = initSession([card('a'), card('b')]);
     s = dropCard(s, 'a')!;

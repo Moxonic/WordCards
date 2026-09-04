@@ -99,8 +99,12 @@ export function answer(
     const got = st.got + 1;
     if (got >= st.needed) {
       states[id] = { ...st, got, mastered: true, promoted: true };
-      if (!st.promoted) persist = 'promote';
-      masteredCount += 1;
+      // Count / persist the promotion exactly once, even if a stale answer()
+      // call somehow revisits a card that is already mastered.
+      if (!st.promoted) {
+        persist = 'promote';
+        masteredCount += 1;
+      }
     } else {
       states[id] = { ...st, got };
       queue = requeue(queue, id);

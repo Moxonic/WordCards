@@ -16,8 +16,14 @@ interface Props {
 
 /**
  * Dependency-free swipe wrapper. Drag left/right; releasing past the threshold
- * flies it off screen and calls onSwipe. A near-still release calls onTap (the
- * pointer capture would otherwise swallow the click before it reached the card).
+ * flies the card off screen and calls onSwipe after a short delay. A near-still
+ * release calls onTap.
+ *
+ * The delayed onSwipe used to misfire: if the parent replaced this card in the
+ * meantime (the on-screen +/- buttons advance the deck too), the pending
+ * callback still ran against a stale session and the mastery counter skipped.
+ * Now the timer is cancelled on unmount, and fly() can only be armed once, so a
+ * swipe answers exactly the card it was made on — or nothing.
  */
 export default function SwipeCard({
   onSwipe,
@@ -31,15 +37,22 @@ export default function SwipeCard({
   const [leaving, setLeaving] = useState<'left' | 'right' | null>(null);
   const [entered, setEntered] = useState(false);
   const start = useRef<{ x: number; y: number } | null>(null);
+  const dragRef = useRef({ x: 0, y: 0 });
+  const flyTimer = useRef<number>();
+  const flying = useRef(false);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setEntered(true));
     return () => cancelAnimationFrame(id);
   }, []);
 
+  // A fly() armed just before this card is replaced must not fire.
+  useEffect(() => () => window.clearTimeout(flyTimer.current), []);
+
   function down(e: PointerEvent<HTMLDivElement>) {
     if (disabled || leaving) return;
     start.current = { x: e.clientX, y: e.clientY };
+    dragRef.current = { x: 0, y: 0 };
     setDrag({ x: 0, y: 0, active: true });
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
@@ -50,24 +63,29 @@ export default function SwipeCard({
 
   function move(e: PointerEvent<HTMLDivElement>) {
     if (!start.current) return;
-    setDrag({ x: e.clientX - start.current.x, y: e.clientY - start.current.y, active: true });
+    const d = { x: e.clientX - start.current.x, y: e.clientY - start.current.y };
+    dragRef.current = d;
+    setDrag({ ...d, active: true });
   }
 
   function up() {
     if (!start.current) return;
-    const { x, y } = drag;
+    const { x, y } = dragRef.current;
     start.current = null;
     if (x > THRESHOLD) fly('right');
     else if (x < -THRESHOLD) fly('left');
     else {
+      dragRef.current = { x: 0, y: 0 };
       setDrag({ x: 0, y: 0, active: false });
       if (!disabled && Math.abs(x) < TAP_SLOP && Math.abs(y) < TAP_SLOP) onTap?.();
     }
   }
 
   function fly(dir: 'left' | 'right') {
+    if (flying.current) return;
+    flying.current = true;
     setLeaving(dir);
-    window.setTimeout(() => onSwipe(dir), FLY_MS);
+    flyTimer.current = window.setTimeout(() => onSwipe(dir), FLY_MS);
   }
 
   const offX = leaving === 'right' ? 600 : leaving === 'left' ? -600 : drag.x;

@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n';
 import { createWriting, getWriting } from '../data/writings';
 import { MOTHER_LANGS, TARGET_LANGS } from '../lib/lang';
-import { PROMPTS, getPrompt, type Prompt } from '../content/prompts';
+import { PROMPTS, getPrompt, localized, type Prompt } from '../content/prompts';
 
 const OWN = '__own__';
 
@@ -49,7 +49,14 @@ export default function NewWriting() {
     };
   }, [attemptOf, user]);
 
-  const promptText = promptChoice === OWN ? ownPrompt.trim() : (selectedPrompt?.no ?? '');
+  // Task title + text are shown in the writing language, so the assignment is in
+  // the language the answer will be written in.
+  const promptText =
+    promptChoice === OWN
+      ? ownPrompt.trim()
+      : selectedPrompt
+        ? localized(selectedPrompt.text, targetLang)
+        : '';
   const canStart = Boolean(title.trim()) && Boolean(promptText);
 
   async function start() {
@@ -130,14 +137,14 @@ export default function NewWriting() {
           <optgroup label={t('new.taskEmail')}>
             {PROMPTS.filter((p) => p.kind === 'epost').map((p) => (
               <option key={p.id} value={p.id}>
-                {p.title}
+                {localized(p.title, targetLang)}
               </option>
             ))}
           </optgroup>
           <optgroup label={t('new.taskEssay')}>
             {PROMPTS.filter((p) => p.kind === 'drofting').map((p) => (
               <option key={p.id} value={p.id}>
-                {p.title}
+                {localized(p.title, targetLang)}
               </option>
             ))}
           </optgroup>
@@ -155,10 +162,7 @@ export default function NewWriting() {
         />
       ) : (
         <div className="rounded-lg bg-white p-3 text-sm text-slate-600 ring-1 ring-slate-200">
-          <p>{selectedPrompt?.no}</p>
-          {selectedPrompt && lang !== 'nb' && (
-            <p className="mt-1 text-xs italic text-slate-400">{selectedPrompt.en}</p>
-          )}
+          <p>{selectedPrompt && localized(selectedPrompt.text, targetLang)}</p>
           {selectedPrompt && (
             <p className="mt-2 text-xs text-slate-400">
               {t('new.recommendedLength', {

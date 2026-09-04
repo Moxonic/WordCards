@@ -1,4 +1,4 @@
-# Mendo
+# Emendo
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/c6eb9abe-658d-4b0f-87ae-e4f94185274c/deploy-status)](https://app.netlify.com/projects/mywordcards/deploys)
 

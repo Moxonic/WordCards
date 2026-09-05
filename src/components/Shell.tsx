@@ -71,8 +71,12 @@ export default function Shell() {
               <button
                 onClick={() => setMenuOpen((v) => !v)}
                 title={t('common.account')}
-                className="flex items-center gap-1 rounded-none pr-1 hover:bg-slate-100"
+                className="flex items-center gap-1.5 rounded-none pr-1 hover:bg-slate-100"
               >
+                <Flag
+                  code={lang}
+                  className="h-[13px] w-[19px] ring-1 ring-slate-300 shrink-0"
+                />
                 {user?.photoURL ? (
                   <img
                     src={user.photoURL}

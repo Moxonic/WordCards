@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useI18n, tEn } from '../i18n';
 import { createWriting, getWriting } from '../data/writings';
+import { subscribePrefs, type Prefs } from '../data/prefs';
 import { MOTHER_LANGS, TARGET_LANGS } from '../lib/lang';
 import { PROMPTS, getPrompt, localized, type Prompt } from '../content/prompts';
 
@@ -16,12 +17,25 @@ export default function NewWriting() {
   const attemptOf = params.get('attemptOf') ?? undefined;
 
   const [targetLang, setTargetLang] = useState('nb');
-  const [motherLang, setMotherLang] = useState(lang === 'nb' ? 'en' : lang);
+  const [motherLang, setMotherLang] = useState(lang);
+  const [prefs, setPrefs] = useState<Prefs | null>(null);
+  const motherPicked = useRef(false);
   const [title, setTitle] = useState('');
   const [promptChoice, setPromptChoice] = useState<string>(PROMPTS[0].id);
   const [ownPrompt, setOwnPrompt] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    return subscribePrefs(user.uid, setPrefs);
+  }, [user]);
+
+  // Adopt the mother tongue saved at login, unless this form already has one.
+  useEffect(() => {
+    if (attemptOf || motherPicked.current || !prefs?.motherLang) return;
+    setMotherLang(prefs.motherLang);
+  }, [prefs, attemptOf]);
 
   const selectedPrompt: Prompt | undefined = useMemo(
     () => (promptChoice === OWN ? undefined : getPrompt(promptChoice)),
@@ -34,6 +48,7 @@ export default function NewWriting() {
     let cancelled = false;
     getWriting(user.uid, attemptOf).then((w) => {
       if (!w || cancelled) return;
+      motherPicked.current = true;
       setMotherLang(w.motherLang);
       setTargetLang(w.targetLang);
       setTitle(w.title);
@@ -106,7 +121,10 @@ export default function NewWriting() {
         {t('new.motherLang')}
         <select
           value={motherLang}
-          onChange={(e) => setMotherLang(e.target.value)}
+          onChange={(e) => {
+            motherPicked.current = true;
+            setMotherLang(e.target.value);
+          }}
           className="rounded-lg border border-slate-300 bg-white px-3 py-2"
         >
           {MOTHER_LANGS.map((l) => (

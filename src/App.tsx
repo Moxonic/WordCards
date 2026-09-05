@@ -4,7 +4,7 @@ import { useAuth } from './auth/AuthContext';
 import { I18nProvider } from './i18n';
 import { guessUiLang } from './i18n/config';
 import { translate } from './i18n/messages';
-import { subscribePrefs, saveUiLang, type Prefs } from './data/prefs';
+import { subscribePrefs, saveUiLang, saveMotherLang, type Prefs } from './data/prefs';
 import Shell from './components/Shell';
 import Login from './components/Login';
 import LangGate from './components/LangGate';
@@ -49,11 +49,12 @@ export default function App() {
     return subscribePrefs(user.uid, setPrefs);
   }, [user]);
 
-  // Picked a flag before signing in? Keep it, and skip the language gate.
+  // Picked a flag before signing in? That's your language: it becomes both the
+  // mother tongue and the menu language, and the language gate is skipped.
   useEffect(() => {
     if (!user || !prefs || prefs.uiLang || !langChosen) return;
-    saveUiLang(user.uid, preLang).catch((e) =>
-      console.error('[remenda] saving the menu language failed', e),
+    saveMotherLang(user.uid, preLang).catch((e) =>
+      console.error('[remenda] saving your language failed', e),
     );
   }, [user, prefs, langChosen, preLang]);
 

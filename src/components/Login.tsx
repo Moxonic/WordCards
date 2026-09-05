@@ -31,28 +31,33 @@ export default function Login({
       <div className="flex flex-col items-center gap-4">
         <Wordmark className="text-2xl font-medium uppercase tracking-[0.32em] text-slate-800" />
 
-        {/* Menu language, pickable before signing in. Saved to the account on the
-            first sign-in, so the language gate is skipped when it's chosen here. */}
-        <div className="flex items-center gap-4">
-          {UI_LANGS.map((l) => {
-            const active = l.code === lang;
-            return (
-              <button
-                key={l.code}
-                onClick={() => onPickLang(l.code)}
-                title={l.english}
-                aria-label={l.english}
-                aria-pressed={active}
-                className={`border-b-2 pb-1.5 transition ${
-                  active
-                    ? 'border-slate-800 opacity-100'
-                    : 'border-transparent opacity-45 hover:opacity-80'
-                }`}
-              >
-                <Flag code={l.code} className="h-[19px] w-[28px] ring-1 ring-slate-300" />
-              </button>
-            );
-          })}
+        {/* Your language, pickable before signing in: it becomes the mother tongue
+            your mistakes get translated into, and seeds the menu language. */}
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+            Your language
+          </span>
+          <div className="flex items-center gap-4">
+            {UI_LANGS.map((l) => {
+              const active = l.code === lang;
+              return (
+                <button
+                  key={l.code}
+                  onClick={() => onPickLang(l.code)}
+                  title={l.english}
+                  aria-label={l.english}
+                  aria-pressed={active}
+                  className={`border-b-2 pb-1.5 transition ${
+                    active
+                      ? 'border-slate-800 opacity-100'
+                      : 'border-transparent opacity-45 hover:opacity-80'
+                  }`}
+                >
+                  <Flag code={l.code} className="h-[19px] w-[28px] ring-1 ring-slate-300" />
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <span className="h-px w-10 bg-slate-300" />

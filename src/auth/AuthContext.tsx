@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (err) {
-      console.error('[skrivetrening] sign-in failed:', err);
+      console.error('[remenda] sign-in failed:', err);
       setError(err as Error);
     }
   }

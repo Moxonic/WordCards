@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { useI18n, type MsgKey } from '../i18n';
+import { useI18n, tEn, type MsgKey } from '../i18n';
 import { subscribeWriting, retryGrading, markWritingError } from '../data/writings';
 import type { Writing } from '../types';
 import Spinner from '../components/Spinner';
@@ -41,7 +41,7 @@ export default function Results() {
     if (graceStart.current == null) graceStart.current = Date.now();
     const softId = window.setTimeout(() => setSlow(true), 25_000);
     const hardId = window.setTimeout(() => {
-      if (user) markWritingError(user.uid, id, t('results.watchdogError'));
+      if (user) markWritingError(user.uid, id, tEn('results.watchdogError'));
     }, 120_000);
     return () => {
       window.clearTimeout(softId);
@@ -61,7 +61,7 @@ export default function Results() {
 
   if (writing === undefined) return <Spinner label={t('common.loading')} />;
   if (writing === null)
-    return <p className="p-6 text-center text-slate-500">{t('common.notFound')}</p>;
+    return <p className="p-6 text-center text-slate-500">{tEn('common.notFound')}</p>;
 
   if (writing.status === 'grading') {
     return (
@@ -82,7 +82,7 @@ export default function Results() {
               <button
                 onClick={() =>
                   user &&
-                  markWritingError(user.uid, id, t('results.cancelled')).then(() =>
+                  markWritingError(user.uid, id, tEn('results.cancelled')).then(() =>
                     nav(`/write/${id}`),
                   )
                 }
@@ -91,7 +91,7 @@ export default function Results() {
                 {t('common.cancel')}
               </button>
             </div>
-            <p className="mt-1 max-w-xs text-xs text-slate-400">{t('results.devHint')}</p>
+            <p className="mt-1 max-w-xs text-xs text-slate-400">{tEn('results.devHint')}</p>
           </div>
         )}
       </div>
@@ -101,7 +101,7 @@ export default function Results() {
   if (writing.status === 'error') {
     return (
       <div className="flex flex-col items-center gap-3 p-8 text-center">
-        <p className="text-slate-700">{writing.errorMessage || t('results.genericError')}</p>
+        <p className="text-slate-700">{writing.errorMessage || tEn('results.genericError')}</p>
         <div className="flex gap-2">
           <button
             onClick={doRetry}

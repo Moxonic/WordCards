@@ -1,7 +1,9 @@
 import { FcGoogle } from 'react-icons/fc';
 import { useAuth } from '../auth/AuthContext';
-import { useT } from '../i18n';
+import { useT, tEn } from '../i18n';
+import { UI_LANGS } from '../i18n/config';
 import Wordmark from './Wordmark';
+import Flag from './Flag';
 
 // The concept pitch is intentionally always in English, whatever the browser
 // language — it's the one place a first-time visitor meets the app.
@@ -17,12 +19,18 @@ const STEPS: [string, string][] = [
   ],
 ];
 
-export default function Login() {
+export default function Login({
+  lang,
+  onPickLang,
+}: {
+  lang: string;
+  onPickLang: (code: string) => void;
+}) {
   const { signInWithGoogle, configured, error } = useAuth();
   const t = useT();
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-9 bg-slate-50 px-9 py-12 text-center">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-8 bg-slate-50 px-9 py-12 text-center">
       <div className="flex flex-col items-center gap-3">
         <Wordmark className="text-2xl font-medium uppercase tracking-[0.32em] text-slate-800" />
         <span className="h-px w-10 bg-slate-300" />
@@ -54,10 +62,37 @@ export default function Login() {
         {t('login.google')}
       </button>
 
-      {!configured && <p className="max-w-xs text-sm text-red-700">{t('login.notConfigured')}</p>}
+      {!configured && <p className="max-w-xs text-sm text-red-700">{tEn('login.notConfigured')}</p>}
       {error && (
-        <p className="max-w-xs text-sm text-red-700">{t('login.failed', { message: error.message })}</p>
+        <p className="max-w-xs text-sm text-red-700">
+          {tEn('login.failed', { message: error.message })}
+        </p>
       )}
+
+      {/* Menu language, pickable before signing in. Saved to the account on the
+          first sign-in, so the language gate is skipped when it's chosen here. */}
+      <div className="flex flex-col items-center gap-3">
+        <span className="h-px w-10 bg-slate-300" />
+        <div className="flex items-center gap-4">
+          {UI_LANGS.map((l) => {
+            const active = l.code === lang;
+            return (
+              <button
+                key={l.code}
+                onClick={() => onPickLang(l.code)}
+                title={l.english}
+                aria-label={l.english}
+                aria-pressed={active}
+                className={`border-b-2 pb-1.5 transition ${
+                  active ? 'border-slate-800 opacity-100' : 'border-transparent opacity-45 hover:opacity-80'
+                }`}
+              >
+                <Flag code={l.code} className="h-[19px] w-[28px] ring-1 ring-slate-300" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

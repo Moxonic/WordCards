@@ -24,7 +24,7 @@ export function subscribePrefs(
       onChange({ uiLang: data?.uiLang ?? null });
     },
     (err) => {
-      console.error('[skrivetrening] prefs subscription failed:', err);
+      console.error('[remenda] prefs subscription failed:', err);
       onError?.(err);
     },
   );

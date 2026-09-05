@@ -54,7 +54,7 @@ export default function TextsList() {
       await deleteWriting(user.uid, id);
       // The onSnapshot listener drops the row once it's gone.
     } catch (e) {
-      console.error('[skrivetrening] deleteWriting failed', e);
+      console.error('[remenda] deleteWriting failed', e);
     } finally {
       setDeletingId(null);
       setConfirmId(null);

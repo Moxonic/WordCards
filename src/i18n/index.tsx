@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
-import { translate, translatePlural, type MsgKey } from './messages';
+import { translate, translatePlural, FALLBACK_LANG, type MsgKey } from './messages';
 import { DEFAULT_UI_LANG, isRtl } from './config';
 
 type Vars = Record<string, string | number>;
@@ -42,6 +42,17 @@ export function useI18n(): I18nValue {
 /** Shorthand: const t = useT(); t('home.heading'). */
 export function useT() {
   return useContext(I18nContext).t;
+}
+
+/**
+ * Always-English resolution, whatever the menu language.
+ *
+ * Error messages stay in English on purpose: they are the strings people paste
+ * into a search box or send on when something breaks, and several of them name
+ * commands or config keys that are English anyway.
+ */
+export function tEn(key: MsgKey, vars?: Vars): string {
+  return translate(FALLBACK_LANG, key, vars);
 }
 
 export { UI_LANGS, uiLangNative, guessUiLang } from './config';

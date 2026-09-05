@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { useT } from '../i18n';
+import { useT, tEn } from '../i18n';
 import { subscribeWriting, saveDraft, submitForGrading } from '../data/writings';
 import { getPrompt } from '../content/prompts';
 import type { Writing } from '../types';
@@ -74,7 +74,7 @@ export default function Editor() {
 
   if (writing === undefined) return <Spinner label={t('common.loading')} />;
   if (writing === null)
-    return <p className="p-6 text-center text-slate-500">{t('common.notFound')}</p>;
+    return <p className="p-6 text-center text-slate-500">{tEn('common.notFound')}</p>;
 
   const prompt = getPrompt(writing.promptId);
   const words = countWords(text);

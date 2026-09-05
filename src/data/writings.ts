@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import type { Writing } from '../types';
+import { translate, FALLBACK_LANG } from '../i18n/messages';
 
 function writingsCol(uid: string) {
   return collection(db, 'users', uid, 'writings');
@@ -36,7 +37,7 @@ export interface NewWritingInput {
 export async function createWriting(uid: string, input: NewWritingInput): Promise<string> {
   const now = Date.now();
   const ref = await addDoc(writingsCol(uid), {
-    title: input.title.trim() || 'Uten tittel',
+    title: input.title.trim() || 'Untitled',
     targetLang: input.targetLang,
     motherLang: input.motherLang,
     promptId: input.promptId ?? null,
@@ -83,7 +84,7 @@ export function subscribeWritings(
     q,
     (snap) => onChange(snap.docs.map((d) => toWriting(d.id, d.data()))),
     (err) => {
-      console.error('[skrivetrening] writings subscription failed:', err);
+      console.error('[remenda] writings subscription failed:', err);
       onError?.(err);
     },
   );
@@ -99,7 +100,7 @@ export function subscribeWriting(
     writingRef(uid, id),
     (snap) => onChange(snap.exists() ? toWriting(snap.id, snap.data()) : null),
     (err) => {
-      console.error('[skrivetrening] writing subscription failed:', err);
+      console.error('[remenda] writing subscription failed:', err);
       onError?.(err);
     },
   );
@@ -146,13 +147,13 @@ export async function invokeGrading(uid: string, id: string, idToken: string): P
     });
     // Background functions answer 202 with no useful body.
     if (!res.ok && res.status !== 202) {
-      throw new Error(`Kunne ikke starte retting (${res.status})`);
+      throw new Error(`Could not start grading (${res.status})`);
     }
   } catch {
     await markWritingError(
       uid,
       id,
-      'Fikk ikke kontakt med retteren. Kjører du «npm run netlify-dev»? Prøv igjen.',
+      translate(FALLBACK_LANG, 'results.contactError'),
     );
   }
 }

@@ -37,7 +37,7 @@ export function subscribeMistakesForWriting(
     q,
     (snap) => onChange(snap.docs.map((d) => toMistake(d.id, d.data()))),
     (err) => {
-      console.error('[skrivetrening] mistakes subscription failed:', err);
+      console.error('[remenda] mistakes subscription failed:', err);
       onError?.(err);
     },
   );

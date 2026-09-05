@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { useI18n } from '../i18n';
+import { useI18n, tEn } from '../i18n';
 import { createWriting, getWriting } from '../data/writings';
 import { MOTHER_LANGS, TARGET_LANGS } from '../lib/lang';
 import { PROMPTS, getPrompt, localized, type Prompt } from '../content/prompts';
@@ -75,7 +75,7 @@ export default function NewWriting() {
       nav(`/write/${id}`);
     } catch (e) {
       console.error(e);
-      setError(t('new.createError'));
+      setError(tEn('new.createError'));
       setBusy(false);
     }
   }

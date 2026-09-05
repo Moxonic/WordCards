@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext';
 import { I18nProvider } from './i18n';
@@ -28,9 +28,18 @@ function Frame({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const { user, loading } = useAuth();
-  const [guessed] = useState(guessUiLang);
+  // Before sign-in there is no account to read a preference from, so the menu
+  // language lives here: guessed from the browser, overridable with the flags on
+  // the login screen.
+  const [preLang, setPreLang] = useState(guessUiLang);
+  const [langChosen, setLangChosen] = useState(false);
   const [prefs, setPrefs] = useState<Prefs | undefined>(undefined);
   const [savingLang, setSavingLang] = useState(false);
+
+  const pickLang = useCallback((code: string) => {
+    setPreLang(code);
+    setLangChosen(true);
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -40,11 +49,19 @@ export default function App() {
     return subscribePrefs(user.uid, setPrefs);
   }, [user]);
 
+  // Picked a flag before signing in? Keep it, and skip the language gate.
+  useEffect(() => {
+    if (!user || !prefs || prefs.uiLang || !langChosen) return;
+    saveUiLang(user.uid, preLang).catch((e) =>
+      console.error('[remenda] saving the menu language failed', e),
+    );
+  }, [user, prefs, langChosen, preLang]);
+
   const loadingView = (
-    <I18nProvider lang={guessed}>
+    <I18nProvider lang={preLang}>
       <Frame>
         <div className="flex h-full items-center justify-center">
-          <Spinner label={translate(guessed, 'common.loading')} />
+          <Spinner label={translate(preLang, 'common.loading')} />
         </div>
       </Frame>
     </I18nProvider>
@@ -54,9 +71,9 @@ export default function App() {
 
   if (!user) {
     return (
-      <I18nProvider lang={guessed}>
+      <I18nProvider lang={preLang}>
         <Frame>
-          <Login />
+          <Login lang={preLang} onPickLang={pickLang} />
         </Frame>
       </I18nProvider>
     );
@@ -64,13 +81,14 @@ export default function App() {
 
   if (prefs === undefined) return loadingView;
 
-  // First sign-in: no menu language chosen yet.
+  // First sign-in and no language chosen on the way in: ask.
   if (!prefs.uiLang) {
+    if (langChosen) return loadingView; // the effect above is persisting it
     return (
-      <I18nProvider lang={guessed}>
+      <I18nProvider lang={preLang}>
         <Frame>
           <LangGate
-            guessed={guessed}
+            guessed={preLang}
             busy={savingLang}
             onPick={async (code) => {
               setSavingLang(true);

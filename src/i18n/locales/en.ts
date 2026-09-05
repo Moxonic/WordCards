@@ -46,7 +46,8 @@ const en: Record<MsgKey, string> = {
   'new.taskEmail': 'Email',
   'new.taskEssay': 'Discussion essay',
   'new.ownTask': 'Write my own task…',
-  'new.ownTaskPlaceholder': 'Write the task text here.',
+  'new.ownTaskPlaceholder':
+    'Write the task here — or leave it blank and just start writing.',
   'new.recommendedLength': 'Recommended length: {min}–{max} words',
   'new.createError': "Couldn't create the text. Try again.",
   'new.start': 'Start writing',

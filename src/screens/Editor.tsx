@@ -77,6 +77,7 @@ export default function Editor() {
     return <p className="p-6 text-center text-slate-500">{tEn('common.notFound')}</p>;
 
   const prompt = getPrompt(writing.promptId);
+  const hasPrompt = Boolean(writing.promptText?.trim());
   const words = countWords(text);
   const range = prompt?.words;
   const enough = words >= 20;
@@ -86,14 +87,16 @@ export default function Editor() {
       <div className="border-b border-slate-200 bg-white px-4 py-3">
         <div className="flex items-center justify-between">
           <h2 className="truncate text-base font-semibold text-slate-700">{writing.title}</h2>
-          <button
-            onClick={() => setShowPrompt((v) => !v)}
-            className="shrink-0 text-xs text-slate-500 underline"
-          >
-            {showPrompt ? t('editor.hideTask') : t('editor.showTask')}
-          </button>
+          {hasPrompt && (
+            <button
+              onClick={() => setShowPrompt((v) => !v)}
+              className="shrink-0 text-xs text-slate-500 underline"
+            >
+              {showPrompt ? t('editor.hideTask') : t('editor.showTask')}
+            </button>
+          )}
         </div>
-        {showPrompt && (
+        {hasPrompt && showPrompt && (
           <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">{writing.promptText}</p>
         )}
       </div>

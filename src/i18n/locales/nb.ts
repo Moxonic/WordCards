@@ -48,7 +48,8 @@ const nb = {
   'new.taskEmail': 'E-post',
   'new.taskEssay': 'Drøftingstekst',
   'new.ownTask': 'Skriv min egen oppgave…',
-  'new.ownTaskPlaceholder': 'Skriv oppgaveteksten her.',
+  'new.ownTaskPlaceholder':
+    'Skriv oppgaven her – eller la det stå tomt og bare begynn å skrive.',
   'new.recommendedLength': 'Anbefalt lengde: {min}–{max} ord',
   'new.createError': 'Kunne ikke opprette teksten. Prøv igjen.',
   'new.start': 'Begynn å skrive',

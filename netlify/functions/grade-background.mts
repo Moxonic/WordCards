@@ -240,7 +240,10 @@ export default async (req: Request): Promise<Response> => {
     const targetCode = String(w.targetLang || 'nb');
     const targetName = langName(targetCode);
     const motherName = langName(String(w.motherLang || 'en'));
-    const promptText = String(w.promptText || '(no task text)');
+    // Writing without a set task is allowed ("write my own task", left blank),
+    // so don't ask the model how well a task was answered when there wasn't one.
+    const taskText = String(w.promptText || '').trim();
+    const hasTask = taskText.length > 0;
     const text = String(w.text || '');
 
     const examiner =
@@ -256,13 +259,15 @@ export default async (req: Request): Promise<Response> => {
       `Writing language: ${targetName}\n` +
       `Candidate's mother tongue: ${motherName}\n` +
       `Language for your feedback: ${feedbackName}\n\n` +
-      `Task:\n${promptText}\n\n` +
+      (hasTask
+        ? `Task:\n${taskText}\n\n`
+        : `There is no set task — the candidate chose freely what to write.\n\n`) +
       `Candidate's text:\n"""\n${text}\n"""\n\n` +
       'Return feedback as JSON with exactly this structure:\n' +
       `{
   "cefr": "short level estimate, e.g. \\"B2\\", \\"Just below B2\\", \\"B1\\" (write it in ${feedbackName})",
   "categories": {
-    "content": "one short sentence in ${feedbackName} about content and how well the task is answered",
+    "content": "one short sentence in ${feedbackName} about content${hasTask ? ' and how well the task is answered' : ' and how well the text holds together'}",
     "grammar": "one short sentence in ${feedbackName} about grammar",
     "vocabulary": "one short sentence in ${feedbackName} about vocabulary",
     "spelling": "one short sentence in ${feedbackName} about spelling and punctuation"

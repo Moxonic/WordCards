@@ -21,7 +21,7 @@ export default function NewWriting() {
   const [prefs, setPrefs] = useState<Prefs | null>(null);
   const motherPicked = useRef(false);
   const [title, setTitle] = useState('');
-  const [promptChoice, setPromptChoice] = useState<string>(PROMPTS[0].id);
+  const [promptChoice, setPromptChoice] = useState<string>(OWN);
   const [ownPrompt, setOwnPrompt] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +72,9 @@ export default function NewWriting() {
       : selectedPrompt
         ? localized(selectedPrompt.text, targetLang)
         : '';
-  const canStart = Boolean(title.trim()) && Boolean(promptText);
+  // Your own task is free-form: the text is optional, so a title is enough to
+  // start. A built-in task always has text, so it only needs the title too.
+  const canStart = Boolean(title.trim()) && (promptChoice === OWN || Boolean(promptText));
 
   async function start() {
     if (!user || !canStart) return;

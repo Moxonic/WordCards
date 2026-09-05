@@ -46,7 +46,8 @@ const es: Partial<Record<MsgKey, string>> = {
   'new.taskEmail': 'Correo',
   'new.taskEssay': 'Texto argumentativo',
   'new.ownTask': 'Escribir mi propia tarea…',
-  'new.ownTaskPlaceholder': 'Escribe aquí el texto de la tarea.',
+  'new.ownTaskPlaceholder':
+    'Escribe la tarea aquí, o déjalo en blanco y empieza a escribir.',
   'new.recommendedLength': 'Longitud recomendada: {min}–{max} palabras',
   'new.createError': 'No se pudo crear el texto. Inténtalo de nuevo.',
   'new.start': 'Empezar a escribir',

@@ -219,6 +219,12 @@ export default function Results() {
         ) : (
           <p className="text-center text-sm text-slate-500">{t('results.noMistakes')}</p>
         )}
+        <Link
+          to={`/write/${id}`}
+          className="rounded-none bg-white px-5 py-3 text-center font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+        >
+          {t('texts.keepWriting')}
+        </Link>
         <button
           onClick={() => nav(`/new?attemptOf=${id}`)}
           className="rounded-none bg-white px-5 py-3 text-center font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"

@@ -136,7 +136,7 @@ export default function TextsList() {
                   {t('texts.reviewMistakes')}
                 </Link>
               )}
-              {(w.status === 'draft' || w.status === 'error') && (
+              {w.status !== 'grading' && (
                 <Link
                   to={`/write/${w.id}`}
                   className="rounded-none bg-slate-800 px-3 py-1 text-white hover:bg-slate-700"

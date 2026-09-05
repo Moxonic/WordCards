@@ -39,9 +39,10 @@ export default function Editor() {
     });
   }, [user, id]);
 
-  // If it's already graded / grading, the editor isn't the place to be.
+  // A correction in flight owns the text; anything else can be carried on,
+  // including a graded one — that's how you get corrections as you go.
   useEffect(() => {
-    if (writing && (writing.status === 'grading' || writing.status === 'graded')) {
+    if (writing && writing.status === 'grading') {
       nav(`/results/${id}`, { replace: true });
     }
   }, [writing, id, nav]);

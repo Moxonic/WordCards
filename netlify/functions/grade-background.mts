@@ -116,6 +116,39 @@ async function fsCommit(token: string, writes: FsWrite[]): Promise<void> {
   if (!res.ok) throw new Error(`Firestore commit -> ${res.status}: ${await res.text()}`);
 }
 
+/**
+ * Ids of the flashcards already generated for a writing. A text can be graded
+ * more than once (you keep writing and ask for another correction), and a card
+ * you already have must keep its review progress instead of starting over.
+ */
+async function fsMistakeIds(token: string, uid: string, writingId: string): Promise<Set<string>> {
+  const res = await fetch(`${FS_ROOT}/users/${uid}:runQuery`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      structuredQuery: {
+        from: [{ collectionId: 'mistakes' }],
+        where: {
+          fieldFilter: {
+            field: { fieldPath: 'writingId' },
+            op: 'EQUAL',
+            value: { stringValue: writingId },
+          },
+        },
+        select: { fields: [{ fieldPath: '__name__' }] },
+      },
+    }),
+  });
+  if (!res.ok) throw new Error(`Firestore runQuery -> ${res.status}`);
+  const rows = (await res.json()) as { document?: { name?: string } }[];
+  const ids = new Set<string>();
+  for (const r of rows) {
+    const name = r.document?.name;
+    if (name) ids.add(name.slice(name.lastIndexOf('/') + 1));
+  }
+  return ids;
+}
+
 // --------------------------------------------------------------------- helpers
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -209,6 +242,9 @@ export default async (req: Request): Promise<Response> => {
 
     const w = await fsGet(token, writingPath());
     if (!w) return new Response('no writing', { status: 404 });
+    // A text can be graded many times over — you keep writing and ask again.
+    // Asking sets it back to 'grading', so landing here on 'graded' means a
+    // duplicate invocation for a correction that already finished.
     if (w.status === 'graded') return new Response('already graded', { status: 200 });
 
     // --- daily cap (soft: enforced with the user's own token) ---
@@ -303,13 +339,44 @@ export default async (req: Request): Promise<Response> => {
       .slice(0, MAX_MISTAKES);
 
     const now = Date.now();
+
+    // Cards already on this writing survive a re-grade: their wording is
+    // refreshed but their Leitner state is left alone. Cards you have since
+    // fixed stay too — you still made that mistake once.
+    const existingCards = await fsMistakeIds(token, uid, writingId);
+    const cardIds = new Set(existingCards);
+    const cardWrites: FsWrite[] = [];
+
+    for (const m of mistakes) {
+      const dedupeKey = `${m.original.trim().toLowerCase()}=>${m.corrected.trim().toLowerCase()}`;
+      const docId = `${writingId}__${fnv1a(dedupeKey)}`;
+      const known = existingCards.has(docId);
+      cardIds.add(docId);
+
+      const content = {
+        writingId,
+        type: m.type === 'spelling' ? 'spelling' : 'grammar',
+        original: m.original.trim(),
+        corrected: m.corrected.trim(),
+        translation: m.translation.trim(),
+        note: (m.note || '').trim() || null,
+        dedupeKey,
+      };
+      cardWrites.push({
+        path: `users/${uid}/mistakes/${docId}`,
+        fields: docFields(known ? content : { ...content, ...newCardState(now) }),
+        // Masking the update is what protects an existing card's review state.
+        ...(known ? { updateMask: Object.keys(content) } : {}),
+      });
+    }
+
     const writes: FsWrite[] = [
       {
         path: writingPath(),
         fields: docFields({
           status: 'graded',
           updatedAt: now,
-          mistakeCount: mistakes.length,
+          mistakeCount: cardIds.size,
           grade: {
             cefr: grade.cefr || 'Ukjent',
             categories: {
@@ -327,22 +394,7 @@ export default async (req: Request): Promise<Response> => {
       },
     ];
 
-    for (const m of mistakes) {
-      const dedupeKey = `${m.original.trim().toLowerCase()}=>${m.corrected.trim().toLowerCase()}`;
-      writes.push({
-        path: `users/${uid}/mistakes/${writingId}__${fnv1a(dedupeKey)}`,
-        fields: docFields({
-          writingId,
-          type: m.type === 'spelling' ? 'spelling' : 'grammar',
-          original: m.original.trim(),
-          corrected: m.corrected.trim(),
-          translation: m.translation.trim(),
-          note: (m.note || '').trim() || null,
-          dedupeKey,
-          ...newCardState(now),
-        }),
-      });
-    }
+    writes.push(...cardWrites);
 
     writes.push({
       path: `users/${uid}/meta/usage`,

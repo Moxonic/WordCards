@@ -25,6 +25,7 @@ const en: Record<MsgKey, string> = {
   'shell.myTexts': 'My texts',
   'shell.signOut': 'Sign out',
   'shell.language': 'Language',
+  'shell.home': 'Home',
 
   'home.heading': 'What would you like to do?',
   'home.write.title': 'Write a new text',

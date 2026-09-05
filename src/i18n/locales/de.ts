@@ -26,6 +26,7 @@ const de: Partial<Record<MsgKey, string>> = {
   'shell.myTexts': 'Meine Texte',
   'shell.signOut': 'Abmelden',
   'shell.language': 'Sprache',
+  'shell.home': 'Startseite',
 
   'home.heading': 'Was möchtest du tun?',
   'home.write.title': 'Neuen Text schreiben',

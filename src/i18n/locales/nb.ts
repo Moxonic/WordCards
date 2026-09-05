@@ -27,6 +27,7 @@ const nb = {
   'shell.myTexts': 'Mine tekster',
   'shell.signOut': 'Logg ut',
   'shell.language': 'Språk',
+  'shell.home': 'Hjem',
 
   'home.heading': 'Hva vil du gjøre?',
   'home.write.title': 'Skriv ny tekst',

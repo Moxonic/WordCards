@@ -5,18 +5,15 @@ import { UI_LANGS } from '../i18n/config';
 import Wordmark from './Wordmark';
 import Flag from './Flag';
 
-// The concept pitch is intentionally always in English, whatever the browser
-// language — it's the one place a first-time visitor meets the app.
+// The pitch is intentionally always in English, whatever the browser language —
+// it's the one place a first-time visitor meets the app.
 const STEPS: [string, string][] = [
-  ['Write', 'a short email or discussion essay in Norwegian, English, Spanish or German.'],
+  ['Write', 'an email or a short essay, in Norwegian, English, Spanish or German.'],
   [
-    'Get feedback',
-    'an AI teacher estimates your CEFR level, comments on content, grammar, vocabulary and spelling, and rewrites your text correctly.',
+    'Get corrected',
+    'an AI teacher estimates your CEFR level, comments on grammar, vocabulary and spelling, and rewrites your text properly.',
   ],
-  [
-    'Review',
-    'every correction becomes a flashcard you drill with spaced repetition. Retry the task whenever you like.',
-  ],
+  ['Remember', 'every correction becomes a flashcard. Swipe through them until they stick.'],
 ];
 
 export default function Login({
@@ -31,11 +28,36 @@ export default function Login({
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-8 bg-slate-50 px-9 py-12 text-center">
-      <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-col items-center gap-4">
         <Wordmark className="text-2xl font-medium uppercase tracking-[0.32em] text-slate-800" />
+
+        {/* Menu language, pickable before signing in. Saved to the account on the
+            first sign-in, so the language gate is skipped when it's chosen here. */}
+        <div className="flex items-center gap-4">
+          {UI_LANGS.map((l) => {
+            const active = l.code === lang;
+            return (
+              <button
+                key={l.code}
+                onClick={() => onPickLang(l.code)}
+                title={l.english}
+                aria-label={l.english}
+                aria-pressed={active}
+                className={`border-b-2 pb-1.5 transition ${
+                  active
+                    ? 'border-slate-800 opacity-100'
+                    : 'border-transparent opacity-45 hover:opacity-80'
+                }`}
+              >
+                <Flag code={l.code} className="h-[19px] w-[28px] ring-1 ring-slate-300" />
+              </button>
+            );
+          })}
+        </div>
+
         <span className="h-px w-10 bg-slate-300" />
         <p className="max-w-xs text-sm leading-relaxed text-slate-500">
-          Practise writing in a new language and learn from every mistake.
+          Mend your writing — and remember the fixes.
         </p>
       </div>
 
@@ -68,31 +90,6 @@ export default function Login({
           {tEn('login.failed', { message: error.message })}
         </p>
       )}
-
-      {/* Menu language, pickable before signing in. Saved to the account on the
-          first sign-in, so the language gate is skipped when it's chosen here. */}
-      <div className="flex flex-col items-center gap-3">
-        <span className="h-px w-10 bg-slate-300" />
-        <div className="flex items-center gap-4">
-          {UI_LANGS.map((l) => {
-            const active = l.code === lang;
-            return (
-              <button
-                key={l.code}
-                onClick={() => onPickLang(l.code)}
-                title={l.english}
-                aria-label={l.english}
-                aria-pressed={active}
-                className={`border-b-2 pb-1.5 transition ${
-                  active ? 'border-slate-800 opacity-100' : 'border-transparent opacity-45 hover:opacity-80'
-                }`}
-              >
-                <Flag code={l.code} className="h-[19px] w-[28px] ring-1 ring-slate-300" />
-              </button>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }

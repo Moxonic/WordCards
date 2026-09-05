@@ -6,6 +6,7 @@ import { useI18n } from '../i18n';
 import { UI_LANGS } from '../i18n/config';
 import { saveUiLang } from '../data/prefs';
 import Wordmark from './Wordmark';
+import Flag from './Flag';
 
 export default function Shell() {
   const { user, signOutUser } = useAuth();
@@ -47,7 +48,14 @@ export default function Shell() {
             )}
           </div>
 
-          <Wordmark className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-sm font-medium uppercase tracking-[0.28em] text-slate-700" />
+          <Link
+            to="/"
+            title={t('shell.home')}
+            aria-label={t('shell.home')}
+            className="absolute left-1/2 -translate-x-1/2"
+          >
+            <Wordmark className="text-sm font-medium uppercase tracking-[0.28em] text-slate-700 transition hover:text-slate-900" />
+          </Link>
 
           <div className="flex items-center gap-1">
             <Link
@@ -86,22 +94,31 @@ export default function Shell() {
                     {user?.displayName || user?.email}
                   </div>
 
-                  <label className="flex flex-col gap-1 border-b border-slate-100 px-3 py-2 text-xs text-slate-500">
-                    {t('shell.language')}
-                    <select
-                      value={lang}
-                      onChange={(e) => {
-                        if (user) saveUiLang(user.uid, e.target.value);
-                      }}
-                      className="rounded-none border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700"
-                    >
-                      {UI_LANGS.map((l) => (
-                        <option key={l.code} value={l.code}>
+                  <div className="border-b border-slate-100 px-3 py-2">
+                    <p className="mb-1 text-xs text-slate-500">{t('shell.language')}</p>
+                    {UI_LANGS.map((l) => {
+                      const active = l.code === lang;
+                      return (
+                        <button
+                          key={l.code}
+                          onClick={() => {
+                            if (user) saveUiLang(user.uid, l.code);
+                            setMenuOpen(false);
+                          }}
+                          aria-pressed={active}
+                          className={`flex w-full items-center gap-2.5 px-1 py-1.5 text-left text-sm transition ${
+                            active ? 'font-medium text-slate-800' : 'text-slate-500 hover:text-slate-800'
+                          }`}
+                        >
+                          <Flag
+                            code={l.code}
+                            className={`h-[13px] w-[19px] ring-1 ring-slate-300 ${active ? '' : 'opacity-50'}`}
+                          />
                           {l.native}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                        </button>
+                      );
+                    })}
+                  </div>
 
                   <button
                     onClick={signOutUser}
